@@ -1,0 +1,36 @@
+# MolB World(MolBworld.com/) — 타입 · 검사 · 빌드. 배포는 하지 않는다(올릴 곳을 정하면 따로 붙인다).
+name: MolB World
+
+on:
+  push:
+    paths:
+      - 'MolBworld.com/**'
+      - '.github/workflows/molbworld.yml'
+  pull_request:
+    paths:
+      - 'MolBworld.com/**'
+      - '.github/workflows/molbworld.yml'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: MolBworld.com
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: MolBworld.com/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: molbworld-dist
+          path: MolBworld.com/dist
+          retention-days: 14

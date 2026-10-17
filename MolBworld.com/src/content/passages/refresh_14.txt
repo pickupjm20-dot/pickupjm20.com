@@ -1,0 +1,67 @@
+IMG: small_start.webp | 할 일을 작게 시작하기
+
+A large task can feel difficult before you even begin. Choose one action that takes less than a minute: open the book, write the title, or clear a corner of your desk.
+Finishing that small action gives you a clear starting point. You can decide what to do next after that.
+
+=== 문장 해석 ===
+
+[1] A large task can feel difficult before you even begin.
+큰 일은 시작하기도 전에 어렵게 느껴질 수 있다.
+- large: 큰
+- task: (해야 할) 일, 과제
+- can: ~할 수 있다
+- feel: (~하게) 느껴지다
+- difficult: 어려운
+- before: ~하기 전에
+- you: 너
+- even: ~조차, ~도
+- begin: 시작하다
+
+[2] Choose one action that takes less than a minute: open the book, write the title, or clear a corner of your desk.
+책을 펴거나, 제목을 쓰거나, 책상 한구석을 치우는 것처럼 1분도 안 걸리는 행동 하나를 골라 보자.
+- choose: 고르다
+- one: 하나의
+- action: 행동
+- that: (앞말을 꾸미는) ~하는
+- takes (take): (시간이) 걸리다
+- less: 더 적은
+- than: ~보다
+- minute: 분
+- open: 펴다, 열다
+- book: 책
+- write: 쓰다
+- title: 제목
+- or: 또는, ~거나
+- clear: 치우다
+- corner: 구석, 모퉁이
+- of: ~의
+- your: 너의
+- desk: 책상
+- less than: ~보다 적은, ~도 안 되는
+
+[3] Finishing that small action gives you a clear starting point.
+그 작은 행동을 끝내면 분명한 출발점이 생긴다.
+- finishing (finish): 끝내다
+- that: 그(앞에서 말한)
+- small: 작은
+- action: 행동
+- gives (give): 주다, 생기게 하다
+- you: 너(에게)
+- clear: 분명한
+- starting (start): 시작, 출발
+- point: 점, 지점
+- starting point: 출발점
+
+[4] You can decide what to do next after that.
+다음에 무엇을 할지는 그 뒤에 정해도 된다.
+- you: 너
+- can: ~해도 되다, ~할 수 있다
+- decide: 정하다, 결정하다
+- what: 무엇
+- to: ~할(지)
+- do: 하다
+- next: 다음에
+- after: ~ 뒤에, ~ 후에
+- that: 그것(=앞의 일)
+- what to do: 무엇을 할지
+- after that: 그 뒤에, 그다음에

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MolB World — 읽은 만큼, 넓어지는 세상</title>
+    <meta
+      name="description"
+      content="읽던 글에서 모르는 낱말을 그 자리에서 담고, 공부한 만큼 다람쥐 몰비의 세상이 채워지는 영어 학습 앱 MolB. 지문 셋으로 찍먹하고, 내 글로 블랭크북을 만들어 보세요."
+    />
+    <meta name="theme-color" content="#FBF6ED" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#17130F" media="(prefers-color-scheme: dark)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="MolB World — 읽은 만큼, 넓어지는 세상" />
+    <meta property="og:description" content="지문 셋으로 MolB 찍먹 · 내 글로 만드는 블랭크북 · 몰비의 세상 구경" />
+    <meta property="og:image" content="./img/og.jpg" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/png" href="./favicon.png" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link rel="preload" href="./fonts/Literata-Regular.ttf" as="font" type="font/ttf" crossorigin />
+    <script>
+      // 첫 그림 전에 테마를 정한다 — 밤에 들어온 사람이 크림빛 화면을 한 번 보고 깜빡이지 않게.
+      (function () {
+        var t = null;
+        try {
+          t = JSON.parse(localStorage.getItem('molbworld.theme'));
+        } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <p style="padding: 24px; font-family: sans-serif">
+        MolB World는 자바스크립트로 움직여요. 찍먹 · 블랭크북을 쓰려면 자바스크립트를 켜 주세요.
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

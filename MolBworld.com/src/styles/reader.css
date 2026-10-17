@@ -1,0 +1,496 @@
+/* 리더 — 앱의 ReadingType(Literata 17/1.62, 34em, 문단 0.9em, 첫 줄 1.5em)과 리더의 낱말 표시 · 풀이 카드 · 퀴즈 */
+
+.reader-panel {
+  grid-area: reader;
+  position: relative;
+  padding: 28px 32px 24px;
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(500px 200px at 100% 0%, rgb(240 214 182 / 0.25), transparent 70%),
+    var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  min-width: 0;
+}
+
+.reader-panel__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.reader-panel__meta {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-3);
+}
+
+.reader-panel__title {
+  margin-top: 4px;
+  font-size: clamp(22px, 2.8vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+}
+
+.reader-panel__tip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px 0 4px;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.reader-panel__tip b {
+  color: var(--text-2);
+}
+
+.reader {
+  max-width: var(--read-measure);
+  font-family: var(--font-read);
+  font-size: var(--read-size);
+  line-height: var(--read-leading);
+  color: var(--text);
+  letter-spacing: 0.005em;
+  padding: 8px 0 4px;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.reader:focus-visible {
+  box-shadow: 0 0 0 3px var(--action-tint);
+  border-radius: 12px;
+}
+
+.reader__para {
+  margin: 0.9em 0 0;
+  text-indent: 1.5em;
+}
+
+.reader__para:first-child {
+  margin-top: 0.4em;
+}
+
+.reader__tr {
+  margin: 0.5em 0 0;
+  padding: 8px 12px;
+  border-left: 3px solid var(--reading-tint-border);
+  border-radius: 0 10px 10px 0;
+  background: var(--reading-tint);
+  font-family: var(--font-ui);
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--text-2);
+  animation: pop-in 0.25s var(--ease);
+}
+
+.reader__figure {
+  margin: 1.1em 0 0.3em;
+}
+
+.reader__figure img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.w {
+  border-radius: 6px;
+  padding: 0.04em 0.08em;
+  margin: 0 -0.08em;
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease),
+    color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+  -webkit-touch-callout: none;
+}
+
+@media (hover: hover) {
+  .w:hover {
+    background: var(--hover-word);
+  }
+}
+
+@media (hover: none) {
+  .reader {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+.w.is-marked {
+  background: var(--mark);
+  color: var(--mark-ink);
+  animation: mark-in 0.4s var(--ease);
+}
+
+.w.is-peeked {
+  text-decoration: underline dotted var(--peek-line);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.w.is-active {
+  box-shadow: 0 0 0 2px var(--growth-bright);
+}
+
+.w:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 1px;
+}
+
+@keyframes mark-in {
+  0% {
+    background: var(--growth-tint-border);
+    transform: scale(1.06);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+.reader-panel__dock {
+  position: sticky;
+  bottom: 12px;
+  z-index: 5;
+  margin-top: 16px;
+}
+
+.reader-panel__end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--border);
+}
+
+.reader-panel__end .btn img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.reader-panel__count {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-3);
+}
+
+@media (max-width: 620px) {
+  .reader-panel {
+    padding: 20px 16px 18px;
+    border-radius: var(--radius-lg);
+    margin-inline: -4px;
+  }
+
+  .reader-panel__head {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .reader-panel__dock {
+    bottom: 8px;
+  }
+}
+
+/* 풀이 카드 — 앱 리더의 아래 쪽지 */
+
+.wcard {
+  padding: 14px 16px 12px;
+  border-radius: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-lg);
+  animation: card-up 0.25s var(--ease);
+}
+
+@keyframes card-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.wcard__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.wcard__head {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.wcard__head strong {
+  font-weight: 800;
+}
+
+.wcard__none {
+  color: var(--text-3);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.wcard__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 4px;
+}
+
+.wcard__chips:empty {
+  display: none;
+}
+
+.wcard__sentence {
+  margin-top: 6px;
+  font-family: var(--font-read);
+  font-style: italic;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+.wcard__sentence b {
+  font-weight: 400;
+  font-style: normal;
+  background: var(--mark);
+  color: var(--mark-ink);
+  border-radius: 4px;
+  padding: 0 2px;
+}
+
+.wcard__korean {
+  margin-top: 4px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+.wcard__phrase {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--reading-tint);
+  font-size: 14px;
+}
+
+.wcard__phrase b {
+  font-family: var(--font-read);
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.wcard__phrase .link-btn {
+  margin-left: auto;
+  color: var(--reading);
+}
+
+.wcard__hint {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-3);
+  line-height: 1.6;
+}
+
+.wcard__meaning {
+  margin-top: 10px;
+  display: grid;
+  gap: 4px;
+}
+
+.wcard__meaning label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-3);
+}
+
+.wcard__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+/* 뜻 적기 퀴즈 */
+
+.quiz {
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.quiz__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.quiz__title {
+  font-weight: 800;
+  font-size: 16px;
+  margin-right: auto;
+}
+
+.quiz__progress {
+  font-family: var(--font-read);
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+.quiz__bar {
+  height: 6px;
+  margin: 14px 0 20px;
+  border-radius: 999px;
+  background: var(--surface-dim);
+  overflow: hidden;
+}
+
+.quiz__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--growth-bright), var(--growth));
+  transition: width 0.35s var(--ease);
+}
+
+.quiz__word {
+  font-family: var(--font-read);
+  font-size: clamp(30px, 5vw, 40px);
+  line-height: 1.2;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.quiz__hint {
+  font-family: var(--font-read);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--text-2);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.quiz > .link-btn {
+  display: block;
+  margin: 0 auto;
+  font-size: 13px;
+}
+
+.quiz__form {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.quiz__feedback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 14.5px;
+  animation: pop-in 0.2s var(--ease);
+}
+
+.quiz__feedback.is-right {
+  background: var(--growth-tint);
+  color: var(--growth);
+}
+
+.quiz__feedback.is-wrong {
+  background: var(--alert-tint);
+  color: var(--alert);
+}
+
+.quiz__feedback span {
+  color: var(--text);
+}
+
+.quiz__feedback .link-btn {
+  margin-left: auto;
+  font-size: 13px;
+}
+
+.quiz__score {
+  margin: 14px 0;
+  font-size: 18px;
+  color: var(--text-2);
+}
+
+.quiz__score strong {
+  font-family: var(--font-read);
+  font-weight: 400;
+  font-size: 40px;
+  color: var(--growth);
+  margin-right: 4px;
+}
+
+.quiz__wrong {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--alert-tint);
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.quiz__wrong b {
+  font-family: var(--font-read);
+  font-weight: 400;
+  color: var(--text);
+  margin-right: 4px;
+}
+
+.quiz__given {
+  color: var(--text-3);
+}
+
+.quiz__note {
+  margin: 14px 0;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.quiz__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.quiz--empty {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  color: var(--text-2);
+  font-size: 14.5px;
+}
+
+.study-log .quiz {
+  max-width: 560px;
+}

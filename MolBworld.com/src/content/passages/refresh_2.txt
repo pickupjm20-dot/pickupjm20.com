@@ -1,0 +1,50 @@
+IMG: curving_bananas.webp | 바나나는 왜 휘어질까
+
+Bananas grow in a surprising direction. As the fruit develops, it curves upward, against gravity.
+That curved shape is part of the plant’s growth. Even an ordinary fruit can give us a new question to explore.
+
+=== 문장 해석 ===
+
+[1] Bananas grow in a surprising direction.
+바나나는 놀라운 방향으로 자란다.
+- bananas (banana): 바나나
+- grow: 자라다
+- in: ~(쪽)으로
+- surprising: 놀라운, 뜻밖의
+- direction: 방향
+
+[2] As the fruit develops, it curves upward, against gravity.
+열매는 자라면서 중력을 거슬러 위쪽으로 휘어진다.
+- as: ~하면서
+- fruit: 열매
+- develops (develop): 자라다, 발달하다
+- it: 그것(=열매)
+- curves (curve): 휘다, 휘어지다
+- upward: 위쪽으로
+- against: ~을 거슬러
+- gravity: 중력
+
+[3] That curved shape is part of the plant’s growth.
+그 휜 모양은 식물 성장의 일부다.
+- that: 그(앞에서 말한)
+- curved: 휜, 굽은
+- shape: 모양
+- is (be): ~이다
+- part: 일부, 부분
+- of: ~의
+- plant: 식물
+- growth: 성장
+- part of: ~의 일부
+
+[4] Even an ordinary fruit can give us a new question to explore.
+평범한 과일조차 우리에게 탐구할 새로운 질문을 줄 수 있다.
+- even: ~조차
+- ordinary: 평범한
+- fruit: 과일
+- can: ~할 수 있다
+- give: 주다
+- us: 우리(에게)
+- new: 새로운
+- question: 질문
+- to: ~할(앞말을 꾸밈)
+- explore: 탐구하다

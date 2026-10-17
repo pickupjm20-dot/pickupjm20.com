@@ -1,0 +1,603 @@
+/* 블랭크북 — 책장 · 책 · 단어장 세 칸(좁으면 탭) */
+
+.bb {
+  padding: 28px 0 72px;
+  min-height: calc(100vh - var(--header-h));
+  background:
+    radial-gradient(900px 360px at 100% -10%, var(--reading-tint), transparent 60%),
+    var(--bg);
+}
+
+.bb__head {
+  margin-bottom: 20px;
+}
+
+.bb__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-3);
+  text-decoration: none;
+}
+
+.bb__back:hover {
+  color: var(--action-dark);
+}
+
+.bb__title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.bb__title-row img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.bb__title {
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 850;
+  letter-spacing: -0.04em;
+  line-height: 1.2;
+}
+
+.bb__sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 14.5px;
+  color: var(--text-2);
+}
+
+.bb__guide-toggle {
+  margin-left: auto;
+}
+
+.bb__guide {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  animation: pop-in 0.25s var(--ease);
+}
+
+.bb__guide li {
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.bb__guide h2 {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.bb__guide p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-2);
+}
+
+.bb__tabs {
+  display: none;
+  margin-bottom: 14px;
+}
+
+.bb__layout {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr) 320px;
+  gap: 20px;
+  align-items: start;
+}
+
+.bb__col {
+  min-width: 0;
+}
+
+.bb__col--shelf,
+.bb__col--words {
+  position: sticky;
+  top: calc(var(--header-h) + 16px);
+  max-height: calc(100vh - var(--header-h) - 32px);
+  overflow: auto;
+  border-radius: var(--radius-lg);
+}
+
+.bb__col--book {
+  padding: 24px 28px;
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 1180px) {
+  .bb__layout {
+    grid-template-columns: 230px minmax(0, 1fr);
+  }
+
+  .bb__col--words {
+    grid-column: 1 / -1;
+    position: static;
+    max-height: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .bb__guide {
+    grid-template-columns: 1fr;
+  }
+
+  .bb__tabs {
+    display: flex;
+    width: 100%;
+  }
+
+  .bb__tabs button {
+    flex: 1;
+  }
+
+  .bb__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bb__col {
+    display: none;
+  }
+
+  .bb__col--shelf,
+  .bb__col--words {
+    position: static;
+    max-height: none;
+  }
+
+  .bb__layout--shelf .bb__col--shelf,
+  .bb__layout--book .bb__col--book,
+  .bb__layout--words .bb__col--words {
+    display: block;
+  }
+
+  .bb__col--book {
+    padding: 20px 16px;
+    border-radius: var(--radius-lg);
+  }
+}
+
+/* 책장 */
+
+.shelf,
+.words {
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.shelf__head,
+.words__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.shelf__head h2,
+.words__head h2 {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.shelf__empty {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface-dim);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-2);
+}
+
+.shelf__list {
+  display: grid;
+  gap: 6px;
+}
+
+.shelf__book {
+  position: relative;
+  width: 100%;
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px 10px 20px;
+  border-radius: 12px;
+  border: 1.5px solid transparent;
+  background: var(--bg);
+  text-align: left;
+  overflow: hidden;
+  transition: all 0.18s var(--ease);
+}
+
+.shelf__book:hover {
+  border-color: var(--border-strong);
+}
+
+.shelf__book.is-on {
+  border-color: var(--action);
+  background: var(--action-tint);
+}
+
+.shelf__spine {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 7px;
+  background: linear-gradient(180deg, var(--growth-bright), var(--growth));
+}
+
+.shelf__list li:nth-child(3n + 2) .shelf__spine {
+  background: linear-gradient(180deg, #e0b04f, var(--action));
+}
+
+.shelf__list li:nth-child(3n + 3) .shelf__spine {
+  background: linear-gradient(180deg, #a891cf, var(--reading));
+}
+
+.shelf__title {
+  font-weight: 750;
+  font-size: 14.5px;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shelf__meta {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.shelf__tools {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+}
+
+.shelf__storage {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-3);
+}
+
+.shelf__storage .dot {
+  margin-top: 5px;
+}
+
+.shelf__btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 8px -8px 0;
+}
+
+/* 새 책 · 고치기 */
+
+.bb__new-head {
+  margin-bottom: 8px;
+}
+
+.bb__new-head .mascot__bubble {
+  margin-bottom: 26px;
+}
+
+.editor {
+  display: grid;
+  gap: 8px;
+}
+
+.editor__label {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text-2);
+}
+
+.editor__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.editor__title {
+  font-weight: 700;
+}
+
+.editor__text {
+  min-height: 300px;
+  resize: vertical;
+  font-family: var(--font-read);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.editor__count {
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+
+.editor__warn {
+  font-size: 13.5px;
+  color: var(--alert);
+}
+
+.editor__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.bb__note {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--surface-dim);
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text-3);
+}
+
+/* 책 */
+
+.book__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.book__meta {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-3);
+}
+
+.book__title {
+  margin-top: 2px;
+  font-size: clamp(22px, 2.6vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+}
+
+.book__tools {
+  display: flex;
+  gap: 2px;
+}
+
+.book__warn {
+  margin-top: 10px;
+  font-size: 13.5px;
+  color: var(--alert);
+}
+
+.book__body .reader {
+  max-width: var(--read-measure);
+}
+
+.levels {
+  margin-top: 14px;
+}
+
+.levels__bar {
+  display: flex;
+  gap: 2px;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.levels__seg {
+  flex-basis: 0;
+}
+
+.levels__seg--A1 {
+  background: var(--lv-a1);
+}
+
+.levels__seg--A2 {
+  background: var(--lv-a2);
+}
+
+.levels__seg--B1 {
+  background: var(--lv-b1);
+}
+
+.levels__seg--B2 {
+  background: var(--lv-b2);
+}
+
+.levels__seg--C1 {
+  background: var(--lv-c1);
+}
+
+.levels__seg--out {
+  background: var(--lv-out);
+}
+
+.levels__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.levels__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.levels__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.chip--level.levels__seg--out {
+  color: var(--text-2);
+}
+
+/* 단어장 */
+
+.words .seg {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.words .seg button {
+  flex: 1;
+}
+
+.words__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text-3);
+}
+
+.words__search:focus-within {
+  border-color: var(--action);
+}
+
+.words__search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  outline: none;
+  font-size: 14.5px;
+}
+
+.words__actions {
+  display: flex;
+  gap: 6px;
+  margin: 10px 0 12px;
+}
+
+.words__empty {
+  padding: 18px 4px;
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+.words__list {
+  display: grid;
+  gap: 8px;
+}
+
+.word-row {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  animation: pop-in 0.2s var(--ease);
+}
+
+.word-row__top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.word-row__word {
+  font-family: var(--font-read);
+  font-weight: 400;
+  font-size: 18px;
+  color: var(--mark-ink);
+}
+
+.word-row__del {
+  margin-left: auto;
+  opacity: 0.5;
+}
+
+.word-row:hover .word-row__del {
+  opacity: 1;
+}
+
+.word-row__meaning {
+  display: block;
+  width: 100%;
+  margin: 2px 0;
+  padding: 2px 4px;
+  margin-left: -4px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: left;
+  font-weight: 700;
+  font-size: 14.5px;
+}
+
+.word-row__meaning:hover {
+  background: var(--surface-dim);
+}
+
+.word-row__blank {
+  color: var(--action-dark);
+  font-weight: 600;
+  text-decoration: underline dotted;
+}
+
+.word-row__sentence {
+  font-family: var(--font-read);
+  font-style: italic;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.word-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  margin-top: 4px;
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
+
+.words .quiz {
+  border: 0;
+  box-shadow: none;
+  padding: 4px;
+}

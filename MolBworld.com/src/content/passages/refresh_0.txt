@@ -1,0 +1,46 @@
+IMG: warm_bowl.webp | 오늘은 따뜻한 한 그릇
+
+Do you want a warm lunch? Try rice with an egg and your favorite vegetables.
+Put them in a bowl. Mix them gently. Your simple lunch is ready!
+
+=== 문장 해석 ===
+
+[1] Do you want a warm lunch?
+따뜻한 점심이 먹고 싶니?
+- do: (의문문을 만드는 말)
+- you: 너
+- want: 원하다, ~하고 싶다
+- warm: 따뜻한
+- lunch: 점심
+
+[2] Try rice with an egg and your favorite vegetables.
+달걀 하나와 네가 좋아하는 채소를 곁들인 밥을 먹어 보자.
+- try: (한번) 먹어 보다
+- rice: 밥
+- with: ~을 곁들인, ~와 함께
+- egg: 달걀
+- and: 그리고, ~와
+- your: 너의
+- favorite: (가장) 좋아하는
+- vegetables (vegetable): 채소
+
+[3] Put them in a bowl.
+재료를 그릇에 담자.
+- put: 담다, 넣다
+- them: 그것들(=재료)
+- in: ~ 안에, ~에
+- bowl: (우묵한) 그릇
+
+[4] Mix them gently.
+재료를 살살 섞자.
+- mix: 섞다
+- them: 그것들(=재료)
+- gently: 살살, 부드럽게
+
+[5] Your simple lunch is ready!
+간단한 점심이 다 됐다!
+- your: 너의
+- simple: 간단한
+- lunch: 점심
+- is (be): ~(한 상태)이다
+- ready: 준비된, 다 된
