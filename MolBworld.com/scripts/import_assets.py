@@ -1,12 +1,11 @@
 """MolB 저장소에서 사이트가 쓸 것을 옮겨 온다.
 
-    python3 scripts/import_assets.py ../../MolB
+    python3 scripts/import_assets.py ../../MolB      # MolB-1.4.0 가지(또는 그 뒤)의 체크아웃
 
 앱이 정본이다 — 그림 · 글꼴 · 지문 · 사전은 손으로 고치지 말고 MolB에서 고친 뒤 이 스크립트를 다시 돌린다.
-웹에 맞게 줄이는 것만 여기서 한다(스토어 사진 1~2MB → 폭 540px webp, 사전은 배열로 눌러 담기).
+웹에 맞게 줄이는 것만 여기서 한다(스토어 사진 1~2MB → 폭 540px webp).
 """
 
-import json
 import shutil
 import sys
 from pathlib import Path
@@ -36,7 +35,7 @@ SHOTS = {
 }
 
 # 앱의 그림 아이콘(하단바 · 메인의 길) — 사이트의 흐름 · 블랭크북 카드에 쓴다.
-ICONS = ["book_open", "new_words", "review_quiz", "tree_medium", "notebook", "acorn", "sprout", "diary"]
+ICONS = ["book_open", "review_quiz", "tree_medium", "notebook", "acorn", "diary"]
 
 # 다섯 캐릭터의 몸짓 — 사이트에서 고른 캐릭터가 히어로 · 찍먹 반응 · 블랭크북에 선다.
 POSES = ["smiling", "reading", "observing", "dance", "writing"]
@@ -99,25 +98,7 @@ def main(molb: Path) -> None:
     for f in ["Literata-Regular.ttf", "Literata-Italic.ttf", "OFL.txt"]:
         shutil.copyfile(molb / "assets/fonts/literata" / f, fonts / f)
 
-    # 사전 — [낱말, 뜻, 품사, 발음, 등급]의 배열로 눌러 담는다(블랭크북이 처음 열 때 한 번 받는다).
-    entries = json.loads((molb / "assets/dictionary/en_ko_dictionary.json").read_text(encoding="utf-8"))
-    levels = json.loads((molb / "assets/dictionary/word_levels.json").read_text(encoding="utf-8"))["levels"]
-    level_of = {}
-    for band, words in levels.items():
-        for w in words:
-            level_of.setdefault(w.lower(), band)
-    rows = [
-        [e["en"], e["ko"], e.get("pos", ""), e.get("ipa", ""), level_of.get(e["en"].lower(), "")]
-        for e in entries
-        if e.get("en") and e.get("ko")
-    ]
-    # 사전에 뜻이 없어도 등급은 아는 낱말 — 블랭크북이 '이 낱말은 A1'까지는 말해 준다.
-    known = {r[0].lower() for r in rows}
-    rows += [[w, "", "", "", band] for w, band in level_of.items() if w not in known]
-    dict_dir = PUBLIC / "dict"
-    dict_dir.mkdir(parents=True, exist_ok=True)
-    (dict_dir / "en_ko.json").write_text(json.dumps(rows, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    print(f"passages {len(PASSAGES)} · shots {len(SHOTS)} · dictionary {len(rows)} rows")
+    print(f"passages {len(PASSAGES)} · shots {len(SHOTS)} · icons {len(ICONS)}")
 
 
 if __name__ == "__main__":

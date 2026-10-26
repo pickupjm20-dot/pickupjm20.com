@@ -9,15 +9,15 @@ export function Hero() {
       <div className="hero__glow" aria-hidden="true" />
       <div className="container hero__grid">
         <div className="hero__copy" data-reveal>
-          <p className="eyebrow">영어 읽기 × 나만의 작은 세상</p>
+          <p className="eyebrow">영어 · 자격증 · 학교 공부 × 나만의 작은 세상</p>
           <h1 id="hero-title" className="hero__title">
-            읽은 만큼,
+            공부한 만큼,
             <br />
             몰비의 <em>세상이 넓어져요</em>
           </h1>
           <p className="hero__lead">
-            읽던 글에서 모르는 단어만 <b>톡</b> 눌러 담으세요. 외우지 않아도 단어장이 쌓이고, 익힌 단어 하나가 다람쥐
-            몰비의 방에 물건 하나로 와요.
+            영어 단어도, 자격증 용어도, 시험 범위의 개념도. 과목마다 단어장을 <b>태그</b>로 나눠 담으면, 복습할 때가 된 단어가 다람쥐
+            몰비의 마을에 몽타주 · 신문 · 쪽지 시험으로 붙어요.
           </p>
           <div className="hero__cta">
             <a
@@ -52,20 +52,20 @@ export function Hero() {
             />
           </div>
           <div className="float-card float-card--word" aria-hidden="true">
-            <span className="float-card__label">톡 · 단어장에 담았어요</span>
+            <span className="float-card__label">#영어 · 톡 담았어요</span>
             <span className="float-card__word">
               <mark>acorns</mark> · 도토리
             </span>
           </div>
           <div className="float-card float-card--item" aria-hidden="true">
-            <img src={asset('img/icons/sprout.webp')} alt="" width={36} height={36} />
-            <span>
-              <b>light</b>를 익혔더니
+            <span className="float-card__label float-card__label--reading">#생명과학 · 빈칸 퀴즈</span>
+            <span className="float-card__cloze">
+              <span className="float-card__blank">?</span>은(는) 엽록체에서
               <br />
-              방에 천장 등이 왔어요
+              일어나요
             </span>
           </div>
-          <Mascot className="hero__mascot" size={128} says="오늘 한 편 읽으러 왔어? 헤헤" bubbleSide="top" />
+          <Mascot className="hero__mascot" size={128} says="오늘은 뭐 복습해? 헤헤" bubbleSide="top" />
         </div>
       </div>
     </section>

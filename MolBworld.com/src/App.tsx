@@ -14,10 +14,10 @@ function Routes() {
   useEffect(() => {
     if (route.page === 'home' && route.section) scrollToSection(route.section);
     else window.scrollTo({ top: 0 });
-  }, [route.page, route.section]);
+  }, [route.page, route.section, route.rest.join('/')]);
 
   useEffect(() => {
-    document.title = route.page === 'blankbook' ? '블랭크북 — MolB World' : 'MolB World — 읽은 만큼, 넓어지는 세상';
+    document.title = route.page === 'blankbook' ? '블랭크북 — MolB World' : 'MolB World — 공부한 만큼, 넓어지는 세상';
   }, [route.page]);
 
   return (
@@ -27,7 +27,7 @@ function Routes() {
       </a>
       <Header page={route.page} />
       <main id="main" tabIndex={-1}>
-        {route.page === 'blankbook' ? <BlankBookPage /> : <HomePage />}
+        {route.page === 'blankbook' ? <BlankBookPage rest={route.rest} /> : <HomePage />}
       </main>
       <Footer />
     </>

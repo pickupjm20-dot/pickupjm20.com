@@ -710,7 +710,7 @@ main:focus {
   color: var(--action-dark);
 }
 
-@media (max-width: 920px) {
+@media (max-width: 1000px) {
   .nav-toggle {
     display: inline-grid;
   }

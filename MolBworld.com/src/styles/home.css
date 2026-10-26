@@ -1003,161 +1003,15 @@
   gap: 16px;
 }
 
-.book-mock {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 380px;
-  padding: 14px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #6b8a4f, #4d6a37);
-  box-shadow: var(--shadow-lg);
-  transform: perspective(1400px) rotateY(-6deg) rotateX(3deg);
-}
-
-.book-mock__spine {
-  position: absolute;
-  left: 50%;
-  top: 14px;
-  bottom: 14px;
-  width: 24px;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, rgb(0 0 0 / 0.14), transparent 40%, transparent 60%, rgb(0 0 0 / 0.14));
-  z-index: 2;
-  pointer-events: none;
-}
-
-.book-mock__page {
-  position: relative;
-  padding: 26px 22px;
-  background: #fffaf0;
-  color: #3a2b1d;
-}
-
-:root[data-theme='dark'] .book-mock__page {
-  background: #f1e6d2;
-}
-
-.book-mock__page--left {
-  border-radius: 8px 2px 2px 8px;
-  box-shadow: inset -12px 0 18px -14px rgb(0 0 0 / 0.25);
-}
-
-.book-mock__page--right {
-  border-radius: 2px 8px 8px 2px;
-  box-shadow: inset 12px 0 18px -14px rgb(0 0 0 / 0.25);
-  display: grid;
-  align-content: start;
-  gap: 10px;
-}
-
-.book-mock__title {
-  font-family: var(--font-read);
-  font-size: 19px;
-  margin-bottom: 12px;
-}
-
-.book-mock__text {
-  font-family: var(--font-read);
-  font-size: 15px;
-  line-height: 1.75;
-  text-indent: 1.5em;
-}
-
-.book-mock__text mark {
-  background: #e2eed8;
-  color: #4a7434;
-}
-
-.book-mock__text .peek {
-  border-bottom: 2px dotted #e08a3c;
-}
-
-.book-mock__label {
-  font-size: 12px;
-  font-weight: 800;
-  color: #8b7a6a;
-  letter-spacing: 0.02em;
-}
-
-.book-mock__word {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 2px 8px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: #fff;
-  border: 1px solid #e8d5c0;
-  font-size: 13px;
-}
-
-.book-mock__word b {
-  font-family: var(--font-read);
-  font-weight: 400;
-  font-size: 17px;
-  color: #4a7434;
-}
-
-.book-mock__word .chip {
-  justify-self: start;
-  background: #f7efe3;
-  border-color: #e8d5c0;
-  color: #6e5d4d;
-}
-
-.book-mock__word span:not(.chip) {
-  grid-column: 1 / -1;
-  font-weight: 700;
-}
-
-.book-mock__word i {
-  grid-column: 1 / -1;
-  font-family: var(--font-read);
-  color: #8b7a6a;
-  font-size: 12.5px;
-}
-
-.book-mock__icon {
-  justify-self: end;
-  margin-top: auto;
-  width: 64px;
-  height: 64px;
-  object-fit: contain;
-  opacity: 0.9;
-}
-
 @media (max-width: 900px) {
   .bb-teaser__grid {
     grid-template-columns: 1fr;
     gap: 40px;
   }
 
-  .book-mock {
-    transform: none;
-  }
 }
 
 @media (max-width: 520px) {
-  .book-mock {
-    grid-template-columns: 1fr;
-    min-height: 0;
-  }
-
-  .book-mock__spine {
-    display: none;
-  }
-
-  .book-mock__page--left,
-  .book-mock__page--right {
-    border-radius: 8px;
-    box-shadow: none;
-  }
-
-  .book-mock__page--right {
-    margin-top: 8px;
-  }
-
   .mini-guide li {
     grid-template-columns: 1fr;
     gap: 4px;
@@ -1658,5 +1512,543 @@
     grid-template-columns: 1fr;
     justify-items: start;
     gap: 16px;
+  }
+}
+
+/* ── 히어로의 빈칸 카드 ─────────────────────────────── */
+
+.float-card__label--reading {
+  color: var(--reading);
+}
+
+.float-card__cloze {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.float-card--item {
+  display: grid;
+  gap: 2px;
+}
+
+.float-card__blank {
+  display: inline-grid;
+  place-items: center;
+  min-width: 34px;
+  height: 22px;
+  margin-right: 1px;
+  border-radius: 6px;
+  border: 1.5px dashed var(--action);
+  background: var(--action-tint);
+  color: var(--action-dark);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+/* ── 무엇을 공부하나 ───────────────────────────────── */
+
+.study-sec {
+  background:
+    radial-gradient(900px 380px at 100% 0%, var(--reading-tint), transparent 60%),
+    var(--bg);
+}
+
+.subject-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.subject-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 16px 0 8px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text-2);
+  transition: all 0.18s var(--ease);
+}
+
+.subject-tab:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.subject-tab.is-on {
+  border-color: var(--action);
+  background: var(--action-tint);
+  color: var(--action-dark);
+}
+
+.subject-tab__kind {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface-dim);
+  font-size: 11.5px;
+  color: var(--text-3);
+}
+
+.subject-tab.is-on .subject-tab__kind {
+  background: var(--surface);
+  color: var(--action-dark);
+}
+
+.study-sec__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+.study-feats {
+  display: grid;
+  gap: 10px;
+}
+
+.study-feats li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.study-feats__n {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--growth-tint);
+  color: var(--growth);
+  font-family: var(--font-read);
+  font-size: 15px;
+}
+
+.study-feats h3 {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.study-feats p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-2);
+}
+
+.study-feats li.study-feats__cta {
+  grid-template-columns: 56px 1fr;
+  align-items: center;
+  background: var(--action-tint);
+  border-color: var(--action-tint-border);
+}
+
+.study-feats__cta img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.study-feats__cta p {
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.village-board {
+  position: relative;
+  padding: 22px;
+  border-radius: var(--radius-xl);
+  background:
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.025) 0 2px, transparent 2px 14px),
+    linear-gradient(160deg, #c99a64, #a8794a);
+  box-shadow: var(--shadow-lg), inset 0 0 0 6px rgb(0 0 0 / 0.06);
+}
+
+:root[data-theme='dark'] .village-board {
+  background:
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.08) 0 2px, transparent 2px 14px),
+    linear-gradient(160deg, #6c4f33, #4b3522);
+}
+
+.village-board__label {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgb(255 253 248 / 0.92);
+  color: #3a2b1d;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.village-board__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+/* 몽타주 · 신문 · 쪽지 시험 — 종이는 늘 밝은 종이(밤 테마에서도 마을의 종이다) */
+.wanted,
+.paper,
+.popquiz {
+  position: relative;
+  color: #3a2b1d;
+  background: #fbf3e2;
+  box-shadow: 0 10px 22px -12px rgb(40 25 10 / 0.55);
+}
+
+.wanted::before,
+.paper::before,
+.popquiz::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle at 35% 35%, #ff8a73, #c0432e);
+  box-shadow: 0 2px 3px rgb(0 0 0 / 0.3);
+}
+
+.wanted {
+  padding: 18px 20px;
+  border-radius: 4px;
+  transform: rotate(-0.8deg);
+  background:
+    radial-gradient(120% 80% at 50% 0%, #fff8e8, #f3e3c0);
+}
+
+.wanted.is-caught {
+  transform: rotate(0.4deg);
+}
+
+.wanted__head {
+  font-family: var(--font-read);
+  font-size: 34px;
+  letter-spacing: 0.18em;
+  text-align: center;
+  color: #6b3a1e;
+  line-height: 1.1;
+}
+
+.wanted__station {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8b6a4a;
+  margin-bottom: 10px;
+}
+
+.wanted__face {
+  display: grid;
+  place-items: center;
+  height: 74px;
+  margin: 0 auto 12px;
+  max-width: 220px;
+  border-radius: 10px;
+  border: 2px solid #c9a678;
+  background: repeating-linear-gradient(45deg, #ead6b2 0 6px, #e4cda5 6px 12px);
+  font-size: 20px;
+  font-weight: 850;
+  color: #6b3a1e;
+  transition: background 0.3s var(--ease);
+}
+
+.wanted.is-caught .wanted__face {
+  background: #dce8ce;
+  border-color: #5e8444;
+  color: #3f6230;
+}
+
+.wanted__facts {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.wanted__facts div {
+  display: grid;
+  grid-template-columns: 78px 1fr;
+  gap: 8px;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.wanted__facts dt {
+  font-weight: 800;
+  color: #8b6a4a;
+}
+
+.wanted__facts dd {
+  margin: 0;
+}
+
+.wanted__gap {
+  padding: 0 2px;
+  border-radius: 4px;
+  background: #f0d6b6;
+  font-weight: 800;
+  color: #6b3a1e;
+}
+
+.wanted__bounty {
+  margin: 10px 0;
+  text-align: center;
+  font-weight: 850;
+  color: #6b3a1e;
+}
+
+.wanted__form {
+  display: flex;
+  gap: 6px;
+}
+
+.wanted__form .field {
+  background: #fffdf8;
+  border-color: #d8c2a6;
+  color: #3a2b1d;
+}
+
+.wanted__result {
+  margin-top: 8px;
+  text-align: center;
+  font-weight: 850;
+}
+
+.wanted__result.ok {
+  color: #3f6230;
+}
+
+.wanted__result.bad {
+  color: #c0432e;
+}
+
+.paper {
+  padding: 16px 14px 14px;
+  border-radius: 3px;
+  transform: rotate(1deg);
+  background: #f6f1e4;
+}
+
+.paper__name {
+  font-family: var(--font-read);
+  font-size: 18px;
+  text-align: center;
+  border-bottom: 2px solid #3a2b1d;
+  padding-bottom: 4px;
+}
+
+.paper__date {
+  font-size: 10.5px;
+  text-align: center;
+  color: #6e5d4d;
+  border-bottom: 1px solid #b9a88f;
+  padding: 3px 0;
+  margin-bottom: 8px;
+}
+
+.paper__lead {
+  font-weight: 850;
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.paper__lead-en {
+  font-family: var(--font-read);
+  font-style: italic;
+  font-size: 12px;
+  color: #6e5d4d;
+  margin-bottom: 8px;
+}
+
+.paper__word {
+  padding: 8px;
+  border: 1px solid #b9a88f;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.paper__word span {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #8b6a4a;
+}
+
+.paper__word b {
+  font-size: 15px;
+}
+
+.popquiz {
+  padding: 16px 14px 14px;
+  border-radius: 3px;
+  transform: rotate(-1.2deg);
+  background:
+    repeating-linear-gradient(180deg, transparent 0 23px, #cfdcec 23px 24px),
+    #fdfbf6;
+}
+
+.popquiz__head {
+  font-size: 13px;
+  font-weight: 850;
+  margin-bottom: 6px;
+  color: #3d6fb4;
+}
+
+.popquiz ol {
+  list-style: decimal;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.popquiz__blank {
+  color: #c0432e;
+  font-weight: 800;
+}
+
+@media (max-width: 960px) {
+  .study-sec__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .village-board {
+    padding: 16px 12px;
+  }
+
+  .village-board__row {
+    grid-template-columns: 1fr;
+  }
+
+  .wanted__facts div {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+/* ── 블랭크북 소개의 맞춰 보기 그림 ───────────────────── */
+
+.quiz-mock {
+  padding: 18px;
+  border-radius: var(--radius-xl);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  transform: perspective(1400px) rotateY(-5deg) rotateX(2deg);
+  font-size: 14px;
+}
+
+.quiz-mock__bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.quiz-mock .ok {
+  color: var(--growth);
+}
+
+.quiz-mock .bad {
+  color: var(--alert);
+}
+
+.quiz-mock__toggle {
+  color: var(--text-3);
+}
+
+.quiz-mock__card {
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.quiz-mock__topic {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--text-3);
+}
+
+.quiz-mock__title {
+  font-size: 17px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.quiz-mock__text {
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.quiz-mock__reveal {
+  padding: 1px 3px;
+  border-radius: 6px;
+  background: var(--growth-tint);
+  font-weight: 800;
+}
+
+.quiz-mock__input {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  font-size: 17px;
+}
+
+.quiz-mock__fb {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--growth-tint);
+  border: 1px solid var(--growth-tint-border);
+}
+
+.quiz-mock__fb b {
+  color: var(--growth);
+}
+
+.quiz-mock__fb span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-2);
+}
+
+.quiz-mock__rank {
+  margin-top: 10px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-3);
+}
+
+@media (max-width: 900px) {
+  .quiz-mock {
+    transform: none;
   }
 }

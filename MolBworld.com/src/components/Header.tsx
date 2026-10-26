@@ -6,6 +6,7 @@ import { CloseIcon, MenuIcon, MoonIcon, SunIcon } from './Icons';
 
 const NAV = [
   { section: 'about', label: 'MolB' },
+  { section: 'study', label: '무엇을 공부하나' },
   { section: 'taste', label: '찍먹' },
   { section: 'blankbook', label: '블랭크북', page: true },
   { section: 'world', label: '몰비의 세상' },

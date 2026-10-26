@@ -1,248 +1,264 @@
 /**
- * 블랭크북 — 내 글로 만드는 MolB 리더. 사이트에서 끝까지 쓰는 기능이고, 장부는 이 브라우저(localStorage)에 산다.
+ * 블랭크북 — 외울 말을 지운 빈칸을 쳐서 채우는 공부. 앱(리더 탭의 셋째 화면, 10-16 ~ 10-19)에 있다가 걷힌 기능을 사이트로 옮겼다 —
+ * 사용자: "블랭크북 기능(이건 사이트에서 하기 편하고, 로컬 캐시로 둬도 되니까 다 해도 될 거 같아)". 원본은 웹 '과연 내가 외웠을까?'.
  *
- * 넓은 화면은 책장 · 책 · 단어장 세 칸, 좁은 화면은 같은 셋을 위의 탭으로 갈아 본다.
+ * 두 장이다 — **북 페이지**(책 목록)와 **공부 화면**([개념 필기 | 맞춰 보기]). 주소: `#/blankbook` · `#/blankbook/<책>` ·
+ * `#/blankbook/<책>/quiz` · `#/blankbook/sample/<예시>`(예시 책을 만들고 연다).
+ *
+ * 사이트판에서 뺀 것: OCR(PDF · 사진) · AI(조사 확인 · 고르기) · FSRS 복습 일정. 조사는 기기의 짐작 + 사람이 고친 것, 문제 차례는 안 푼 것 ·
+ * 틀린 것 먼저(일정 없음 — '복습 알고리즘 꺼짐').
  */
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft } from '../components/Icons';
-import { Mascot } from '../components/Mascot';
 import { ReviewOffBadge } from '../components/ReviewOffBadge';
-import { BLANKBOOK_GUIDE } from '../sections/BlankBookTeaser';
-import { loadDictionary, type Dictionary } from '../lib/dictionary';
-import { download, readFileText, today } from '../lib/download';
+import type { BlankBook } from '../lib/blank/book';
+import { SAMPLES, sampleBook } from '../lib/blank/samples';
 import {
-  addBook,
-  addWord,
+  addRound,
+  BLANK_KEY,
   deleteBook,
-  EMPTY_LIBRARY,
-  exportLibrary,
-  mergeLibrary,
-  recordQuiz,
-  removeWord,
-  sanitizeLibrary,
-  updateBook,
-  updateWord,
-} from '../lib/library';
+  EMPTY_STORE,
+  exportStore,
+  mergeStore,
+  recordAnswer,
+  sanitizeStore,
+  upsertBook,
+  type BlankStore,
+} from '../lib/blank/store';
+import { typingStats } from '../lib/blank/typing';
+import { download, readFileText, today } from '../lib/download';
 import { usePersistentState, useStorageHealth } from '../lib/storage';
-import { BookEditor } from './blankbook/BookEditor';
-import { BookView } from './blankbook/BookView';
-import { SAMPLE_TEXT, SAMPLE_TITLE } from './blankbook/sample';
+import { Notes } from './blankbook/Notes';
+import { newRound, Quiz, type Round } from './blankbook/Quiz';
 import { Shelf } from './blankbook/Shelf';
-import { WordsPanel } from './blankbook/WordsPanel';
+import { TypingSheet } from './blankbook/Typing';
 
-type Mode = 'read' | 'edit' | 'new';
-type Tab = 'shelf' | 'book' | 'words';
+const go = (path: string) => {
+  window.location.hash = `#/blankbook${path}`;
+};
 
-export function BlankBookPage() {
-  const [lib, setLib] = usePersistentState('library', EMPTY_LIBRARY, sanitizeLibrary);
-  const [selected, setSelected] = usePersistentState<string | null>('blankbook.selected', null, (v) =>
-    typeof v === 'string' ? v : null,
-  );
-  const [mode, setMode] = useState<Mode>('read');
-  const [tab, setTab] = useState<Tab>('book');
-  const [dict, setDict] = useState<Dictionary | null>(null);
-  const [dictError, setDictError] = useState(false);
-  const [notice, setNotice] = useState('');
+export function BlankBookPage({ rest }: { rest: string[] }) {
+  const [store, setStore] = usePersistentState(BLANK_KEY, EMPTY_STORE, sanitizeStore);
   const storageOk = useStorageHealth();
-  const [guideOpen, setGuideOpen] = useState(() => lib.books.length === 0);
+  const [notice, setNotice] = useState('');
+  const [typingOpen, setTypingOpen] = useState(false);
+  const rounds = useRef(new Map<string, Round>());
+  const [, bumpRounds] = useState(0);
+  const typing = useMemo(() => typingStats(store.rounds), [store.rounds]);
 
-  const book = lib.books.find((b) => b.id === selected) ?? null;
-
-  useEffect(() => {
-    let alive = true;
-    loadDictionary()
-      .then((d) => alive && setDict(d))
-      .catch(() => alive && setDictError(true));
-    return () => {
-      alive = false;
-    };
-  }, []);
+  const [head, sub] = rest;
+  const book = head && head !== 'sample' ? store.books.find((b) => b.id === head) ?? null : null;
+  const tab = sub === 'quiz' ? 'quiz' : 'notes';
 
   useEffect(() => {
     if (!notice) return;
-    const t = window.setTimeout(() => setNotice(''), 3200);
+    const t = window.setTimeout(() => setNotice(''), 3600);
     return () => window.clearTimeout(t);
   }, [notice]);
 
-  // 고른 책이 지워졌으면(다른 탭 · 가져오기) 첫 책으로.
+  // 예시 — 이미 만든 예시면 그 책을, 아니면 새로 만들어 연다. 같은 예시를 두 번 짓지 않게 지은 것을 기억한다
+  // (장부가 바뀌기 전에 이 효과가 다시 돌 수 있다 — 개발 모드의 StrictMode가 그렇다).
+  const building = useRef<string | null>(null);
   useEffect(() => {
-    if (selected && !book) setSelected(lib.books[0]?.id ?? null);
-  }, [selected, book, lib.books, setSelected]);
+    if (head !== 'sample') return;
+    const s = SAMPLES.find((x) => x.id === sub);
+    if (!s) return go('');
+    const made = store.books.find((b) => b.sample === s.id);
+    if (made) return go(`/${made.id}`);
+    if (building.current === s.id) return;
+    building.current = s.id;
+    const b = sampleBook(s);
+    setStore((cur) => upsertBook(cur, b));
+    setNotice(`‘${s.label}’ 예시를 만들었어요 — 맞춰 보기로 빈칸을 쳐 봐요`);
+    go(`/${b.id}`);
+  }, [head, sub, store.books, setStore]);
 
-  const create = (title: string, text: string) => {
-    const { lib: next, book: b } = addBook(lib, title, text);
-    setLib(next);
-    setSelected(b.id);
-    setMode('read');
-    setTab('book');
-    setGuideOpen(false);
-  };
+  // 없는 책을 가리키면 책 목록으로.
+  useEffect(() => {
+    if (head && head !== 'sample' && !book) go('');
+  }, [head, book]);
 
-  const onExport = () => {
-    download(`molb-blankbook-${today()}.json`, exportLibrary(lib), 'application/json');
-  };
+  const saveBook = useCallback((b: BlankBook) => setStore((cur) => upsertBook(cur, b)), [setStore]);
 
   const onImport = async (file: File) => {
     try {
-      const incoming = sanitizeLibrary(JSON.parse(await readFileText(file)));
-      if (incoming.books.length === 0 && incoming.words.length === 0) {
-        setNotice('가져올 책이나 단어가 없는 파일이에요.');
+      const incoming = sanitizeStore(JSON.parse(await readFileText(file)));
+      if (incoming.books.length === 0) {
+        setNotice('가져올 학습주제가 없는 파일이에요.');
         return;
       }
-      setLib((cur) => mergeLibrary(cur, incoming));
-      setNotice(`책 ${incoming.books.length}권 · 단어 ${incoming.words.length}개를 합쳤어요.`);
+      setStore((cur) => mergeStore(cur, incoming));
+      setNotice(`학습주제 ${incoming.books.length}권을 합쳤어요(이미 있는 것은 그대로).`);
     } catch {
       setNotice('블랭크북 내보내기 파일(JSON)이 아니에요.');
     }
   };
 
-  const onClear = () => {
-    if (!window.confirm('책과 단어장을 모두 지울까요? 되돌릴 수 없어요. 먼저 내보내기로 받아 두는 걸 권해요.')) return;
-    setLib(EMPTY_LIBRARY);
-    setSelected(null);
-    setMode('new');
+  const roundOf = (id: string) => {
+    let r = rounds.current.get(id);
+    if (!r) {
+      r = newRound();
+      rounds.current.set(id, r);
+    }
+    return r;
   };
-
-  const onDeleteBook = () => {
-    if (!book) return;
-    if (!window.confirm(`‘${book.title}’을(를) 지울까요? 이 책에서 담은 단어는 단어장에 남아요.`)) return;
-    setLib((cur) => deleteBook(cur, book.id));
-    setSelected(lib.books.find((b) => b.id !== book.id)?.id ?? null);
-  };
-
-  const showEditor = mode === 'new' || !book;
 
   return (
     <div className="bb">
-      <div className="container">
-        <header className="bb__head">
-          <a className="bb__back" href="#/">
-            <ArrowLeft size={16} /> MolB World
-          </a>
-          <div className="bb__title-row">
-            <img src={`${import.meta.env.BASE_URL}img/icons/notebook.webp`} alt="" width={56} height={56} />
-            <div>
-              <h1 className="bb__title">블랭크북</h1>
-              <p className="bb__sub">
-                내 글로 만드는 MolB 리더 · <span className="chip chip--growth">이 브라우저에 저장</span> <ReviewOffBadge />
-              </p>
-            </div>
-            <button type="button" className="link-btn bb__guide-toggle" aria-expanded={guideOpen} onClick={() => setGuideOpen((v) => !v)}>
-              {guideOpen ? '안내 접기' : '의도 · 쓰는 법 · 결과 보기'}
-            </button>
-          </div>
-          {guideOpen && (
-            <ol className="bb__guide">
-              {BLANKBOOK_GUIDE.map((g) => (
-                <li key={g.tag}>
-                  <span className="guide__tag">{g.tag}</span>
-                  <h2>{g.title}</h2>
-                  <p>{g.body}</p>
-                </li>
-              ))}
-            </ol>
-          )}
-        </header>
-
-        <div className="seg bb__tabs" role="tablist" aria-label="블랭크북 화면">
-          {(
-            [
-              ['shelf', `책장 ${lib.books.length}`],
-              ['book', book && !showEditor ? '읽기' : '새 책'],
-              ['words', `단어장 ${lib.words.length}`],
-            ] as const
-          ).map(([k, label]) => (
-            <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)}>
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <div className={`bb__layout bb__layout--${tab}`}>
-          <section className="bb__col bb__col--shelf" aria-label="책장">
-            <Shelf
-              lib={lib}
-              selected={showEditor ? null : selected}
-              onSelect={(id) => {
-                setSelected(id);
-                setMode('read');
-                setTab('book');
-              }}
-              onNew={() => {
-                setMode('new');
-                setTab('book');
-              }}
-              onSample={() => create(SAMPLE_TITLE, SAMPLE_TEXT)}
-              onExport={onExport}
-              onImport={(f) => void onImport(f)}
-              onClear={onClear}
-              storageOk={storageOk}
-            />
-          </section>
-
-          <section className="bb__col bb__col--book" aria-label={book && !showEditor ? book.title : '새 책'}>
-            {showEditor ? (
-              <div className="bb__new">
-                <div className="bb__new-head">
-                  <Mascot pose="writing" size={72} says="어떤 글 읽을 거야? 붙여 넣어 줘!" />
+      <div className="container bb__inner">
+        {book ? (
+          <Study
+            book={book}
+            tab={tab}
+            store={store}
+            round={roundOf(book.id)}
+            onBack={() => go('')}
+            onTab={(t) => go(t === 'quiz' ? `/${book.id}/quiz` : `/${book.id}`)}
+            onSave={saveBook}
+            onMove={(from, to) => setStore((cur) => upsertBook(upsertBook(cur, from), to))}
+            onAnswer={(key, correct) => setStore((cur) => recordAnswer(cur, book.id, key, correct))}
+            onRow={(row) => setStore((cur) => addRound(cur, row))}
+            onIgnoreSpace={(v) => setStore((cur) => ({ ...cur, ignoreSpace: v }))}
+            onRestart={(only) => {
+              rounds.current.set(book.id, newRound(only));
+              bumpRounds((n) => n + 1);
+            }}
+            onNotice={setNotice}
+          />
+        ) : (
+          <>
+            <header className="bb__head">
+              <a className="bb__back" href="#/">
+                <ArrowLeft size={16} /> MolB World
+              </a>
+              <div className="bb__title-row">
+                <img src={`${import.meta.env.BASE_URL}img/icons/notebook.webp`} alt="" width={56} height={56} />
+                <div>
+                  <h1 className="bb__title">블랭크북</h1>
+                  <p className="bb__sub">외울 말을 지우고, 쳐서 채우는 빈 책 · 학교 공부 · 자격증 · 영어</p>
                 </div>
-                <BookEditor
-                  key="new"
-                  submitLabel="책 만들기"
-                  onSubmit={create}
-                  onCancel={book ? () => setMode('read') : undefined}
-                />
-                <p className="bb__note">
-                  사이트에서는 붙여 넣기와 .txt만 열 수 있어요. 앱에서는 .pdf · .docx · 사진(OCR)도 열고, 내장 사전에 없는
-                  낱말은 AI가 문맥의 뜻을 찾아 줘요.
-                </p>
               </div>
-            ) : mode === 'edit' ? (
-              <BookEditor
-                key={book.id}
-                initialTitle={book.title}
-                initialText={book.text}
-                submitLabel="고친 내용 저장"
-                onSubmit={(title, text) => {
-                  setLib((cur) => updateBook(cur, book.id, { title, text }));
-                  setMode('read');
-                }}
-                onCancel={() => setMode('read')}
-              />
-            ) : (
-              <BookView
-                book={book}
-                words={lib.words}
-                dict={dict}
-                dictError={dictError}
-                onCollect={(w) =>
-                  setLib((cur) => addWord(cur, { ...w, bookId: book.id, from: book.title }))
-                }
-                onRemove={(id) => setLib((cur) => removeWord(cur, id))}
-                onMeaning={(id, meaning) => setLib((cur) => updateWord(cur, id, { meaning }))}
-                onEdit={() => setMode('edit')}
-                onDelete={onDeleteBook}
-              />
-            )}
-          </section>
-
-          <section className="bb__col bb__col--words" aria-label="단어장">
-            <WordsPanel
-              key={book?.id ?? 'all'}
-              words={lib.words}
-              bookId={showEditor ? null : (book?.id ?? null)}
-              bookTitle={book?.title ?? ''}
-              onMeaning={(id, meaning) => setLib((cur) => updateWord(cur, id, { meaning }))}
-              onRemove={(id) => setLib((cur) => removeWord(cur, id))}
-              onQuizResult={(id, correct) => setLib((cur) => recordQuiz(cur, id, correct))}
+            </header>
+            <Shelf
+              store={store}
+              typing={typing}
+              storageOk={storageOk}
+              onOpen={(id) => go(`/${id}`)}
+              onCreate={(b, msg) => {
+                setStore((cur) => upsertBook(cur, b));
+                if (msg) setNotice(msg);
+                go(`/${b.id}`);
+              }}
+              onSample={(id) => go(`/sample/${id}`)}
+              onRename={(id, title) => setStore((cur) => ({ ...cur, books: cur.books.map((b) => (b.id === id ? { ...b, title } : b)) }))}
+              onDelete={(id) => {
+                rounds.current.delete(id);
+                setStore((cur) => deleteBook(cur, id));
+              }}
+              onExport={() => download(`molb-blankbook-${today()}.json`, exportStore(store), 'application/json')}
+              onImport={(f) => void onImport(f)}
+              onTyping={() => setTypingOpen(true)}
+              onNotice={setNotice}
             />
-          </section>
-        </div>
+          </>
+        )}
       </div>
+      {typingOpen && <TypingSheet stats={typing} onClose={() => setTypingOpen(false)} />}
       {notice && (
         <p className="toast" role="status">
           {notice}
         </p>
+      )}
+    </div>
+  );
+}
+
+function Study({
+  book,
+  tab,
+  store,
+  round,
+  onBack,
+  onTab,
+  onSave,
+  onMove,
+  onAnswer,
+  onRow,
+  onIgnoreSpace,
+  onRestart,
+  onNotice,
+}: {
+  book: BlankBook;
+  tab: 'notes' | 'quiz';
+  store: BlankStore;
+  round: Round;
+  onBack: () => void;
+  onTab: (t: 'notes' | 'quiz') => void;
+  onSave: (b: BlankBook) => void;
+  onMove: (from: BlankBook, to: BlankBook) => void;
+  onAnswer: (key: string, correct: boolean) => void;
+  onRow: Parameters<typeof Quiz>[0]['onRow'];
+  onIgnoreSpace: (v: boolean) => void;
+  onRestart: (only: Set<string> | null) => void;
+  onNotice: (m: string) => void;
+}) {
+  const [title, setTitle] = useState(book.title);
+  useEffect(() => setTitle(book.title), [book.title]);
+  const stats = store.stats[book.id] ?? {};
+
+  return (
+    <div className="study">
+      <div className="study__bar">
+        <button type="button" className="bb__back" onClick={onBack}>
+          <ArrowLeft size={16} /> 책 목록
+        </button>
+        <ReviewOffBadge align="right" />
+      </div>
+      <input
+        className="study__title"
+        value={title}
+        aria-label="학습주제 이름"
+        onChange={(e) => setTitle(e.target.value)}
+        onBlur={() => title.trim() && title !== book.title && onSave({ ...book, title: title.trim() })}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+          if (e.key === 'Escape') {
+            setTitle(book.title);
+            (e.target as HTMLInputElement).blur();
+          }
+        }}
+      />
+      <div className="seg study__tabs" role="tablist" aria-label="공부 화면">
+        <button type="button" role="tab" aria-selected={tab === 'notes'} onClick={() => onTab('notes')}>
+          개념 필기
+        </button>
+        <button type="button" role="tab" aria-selected={tab === 'quiz'} onClick={() => onTab('quiz')}>
+          맞춰 보기
+        </button>
+      </div>
+      {tab === 'notes' ? (
+        <Notes
+          book={book}
+          others={store.books.filter((b) => b.id !== book.id)}
+          stats={stats}
+          onChange={onSave}
+          onMove={onMove}
+          onNotice={onNotice}
+        />
+      ) : (
+        <Quiz
+          key={round.id}
+          book={book}
+          stats={stats}
+          rounds={store.rounds}
+          round={round}
+          ignoreSpace={store.ignoreSpace}
+          onIgnoreSpace={onIgnoreSpace}
+          onAnswer={onAnswer}
+          onRow={onRow}
+          onRestart={onRestart}
+          onGoNotes={() => onTab('notes')}
+        />
       )}
     </div>
   );

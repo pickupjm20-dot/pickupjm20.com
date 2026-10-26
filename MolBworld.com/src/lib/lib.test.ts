@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PASSAGES } from '../data/passages';
-import { buildDictionary, lookup } from './dictionary';
 import { entryFor, inflects, parseWordLine, phraseAt, readingFor } from './gloss';
-import { candidates, matchesAny } from './lemma';
-import { addBook, addWord, deleteBook, displayWord, EMPTY_LIBRARY, mergeLibrary, recordQuiz, sanitizeLibrary } from './library';
 import { gradeMeaning } from './quiz';
 import { buildDoc, splitParagraphs, splitSentences } from './text';
 
@@ -82,47 +79,6 @@ describe('gloss lines', () => {
   });
 });
 
-describe('lemma candidates', () => {
-  it('offers the surface first, then plausible bases', () => {
-    expect(candidates('Running')[0]).toBe('running');
-    expect(candidates('running')).toContain('run');
-    expect(candidates('went')).toContain('go');
-    expect(candidates('studies')).toContain('study');
-    expect(candidates('liked')).toContain('like');
-    expect(candidates('gently')).toContain('gentle');
-    expect(candidates('easily')).toContain('easy');
-    expect(candidates('leaves')).toEqual(expect.arrayContaining(['leave', 'leaf']));
-    expect(candidates("didn't")).toContain('do');
-    expect(candidates("can't")).toContain('can');
-    expect(candidates("I'm")).toContain('i');
-    expect(candidates('an')).toContain('a');
-  });
-
-  it('matches inflected forms against saved words for highlighting', () => {
-    const saved = new Set(['vegetable', 'go']);
-    expect(matchesAny('Vegetables', saved)).toBe('vegetable');
-    expect(matchesAny('went', saved)).toBe('go');
-    expect(matchesAny('bowl', saved)).toBeNull();
-  });
-});
-
-describe('dictionary', () => {
-  const dict = buildDictionary([
-    ['build', '짓다', 'verb', '', 'A2'],
-    ['building', '건물', 'noun', '', 'A1'],
-    ['run', '달리다', 'verb', '', 'A1'],
-    ['gravity', '', '', '', 'B2'],
-  ]);
-  it('prefers the dictionary hit that comes first', () => {
-    expect(lookup(dict, 'building').entry?.ko).toBe('건물');
-    expect(lookup(dict, 'running')).toMatchObject({ lemma: 'run' });
-  });
-  it('keeps level-only rows and misses gracefully', () => {
-    expect(lookup(dict, 'gravity')).toMatchObject({ lemma: 'gravity', entry: { level: 'B2', ko: '' } });
-    expect(lookup(dict, 'zyzzyva')).toEqual({ lemma: 'zyzzyva', entry: null });
-  });
-});
-
 describe('quiz grading', () => {
   it('accepts any listed meaning and ignores spacing and tildes', () => {
     expect(gradeMeaning('원하다', '원하다, ~하고 싶다')).toBe(true);
@@ -134,41 +90,8 @@ describe('quiz grading', () => {
   });
 });
 
-describe('library', () => {
-  it('adds books and words, keeping the first sentence of a word', () => {
-    let { lib, book } = addBook(EMPTY_LIBRARY, '', 'Hello world.\nSecond line');
-    expect(book.title).toBe('Hello world.');
-    lib = addWord(lib, { id: 'World', surface: 'world', meaning: '', sentence: 'Hello world.', bookId: book.id, from: '' });
-    lib = addWord(lib, { id: 'world', surface: 'worlds', meaning: '세계', sentence: 'Other.', bookId: null, from: '' });
-    expect(lib.words).toHaveLength(1);
-    expect(lib.words[0]).toMatchObject({ id: 'world', sentence: 'Hello world.', meaning: '세계' });
-  });
 
-  it('keeps words when their book is deleted and counts quiz results without scheduling', () => {
-    let { lib, book } = addBook(EMPTY_LIBRARY, 'B', 'x');
-    lib = addWord(lib, { id: 'x', surface: 'x', meaning: 'm', sentence: 's', bookId: book.id, from: '' });
-    lib = recordQuiz(lib, 'x', false);
-    lib = deleteBook(lib, book.id);
-    expect(lib.books).toHaveLength(0);
-    expect(lib.words[0]).toMatchObject({ bookId: null, from: 'B', wrong: 1, right: 0 });
-  });
-
-  it('sanitizes garbage and merges imports without duplicates', () => {
-    expect(sanitizeLibrary('nope')).toEqual(EMPTY_LIBRARY);
-    const incoming = sanitizeLibrary({ books: [{ id: 'b1', title: 'T', text: 'x' }, { nope: 1 }], words: [{ id: 'a' }, { id: 'a' }] });
-    expect(incoming.books).toHaveLength(1);
-    expect(incoming.words).toHaveLength(1);
-    const merged = mergeLibrary(incoming, incoming);
-    expect(merged.books).toHaveLength(1);
-    expect(merged.words).toHaveLength(1);
-  });
-
-  it('shows names as written and everything else in base form', () => {
-    expect(displayWord({ id: 'molbi', surface: 'Molbi', sentence: 'Then Molbi smiled.' })).toBe('Molbi');
-    expect(displayWord({ id: 'please', surface: 'Please', sentence: 'Please submit it.' })).toBe('please');
-    expect(displayWord({ id: 'smell', surface: 'smelled', sentence: 'It smelled good.' })).toBe('smell');
-  });
-
+describe('doc', () => {
   it('builds a doc with global sentence indexes', () => {
     const doc = buildDoc('One. Two.\n\nThree.');
     expect(doc.paragraphs.map((p) => p.sentences.map((s) => s.index))).toEqual([[0, 1], [2]]);

@@ -13,8 +13,8 @@ import { ReviewOffBadge } from '../components/ReviewOffBadge';
 import { PASSAGES, type Passage } from '../data/passages';
 import { asset, LINKS, type Pose } from '../data/site';
 import { entryFor, phraseAt, readingFor, type GlossWord } from '../lib/gloss';
-import { quickLemma } from '../lib/lemma';
-import { addWord, sanitizeLibrary } from '../lib/library';
+import { newBook, newPage, toggleTerm } from '../lib/blank/book';
+import { BLANK_KEY, sanitizeStore as sanitizeBlankStore, upsertBook } from '../lib/blank/store';
 import { readJSON, usePersistentState, writeJSON } from '../lib/storage';
 import { keyOf, markInSentence, type Sentence } from '../lib/text';
 
@@ -55,7 +55,7 @@ function glossOf(p: Passage, hit: WordHit): Gloss {
   const entry = entryFor(reading, hit.token.text);
   return {
     surface: hit.token.text,
-    lemma: entry ? keyOf(entry.lemma) : quickLemma(hit.token.text),
+    lemma: keyOf(entry ? entry.lemma : hit.token.text),
     meaning: entry?.meaning ?? '',
     korean: reading?.korean ?? '',
     sentence: hit.sentence,
@@ -84,7 +84,7 @@ export function Taste() {
   const [showTr, setShowTr] = useState(false);
   const [line, setLine] = useState<Line>(START);
   const [quiz, setQuiz] = useState(false);
-  const [moved, setMoved] = useState<number | null>(null);
+  const [madeBook, setMadeBook] = useState<string | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
 
   const update = (fn: (r: TasteRecord) => TasteRecord) =>
@@ -123,7 +123,7 @@ export function Taste() {
     setActive(null);
     setShowTr(false);
     setQuiz(false);
-    setMoved(null);
+    setMadeBook(null);
     setLine(START);
   };
 
@@ -188,26 +188,18 @@ export function Taste() {
   const restart = () => {
     update(() => EMPTY);
     setQuiz(false);
-    setMoved(null);
+    setMadeBook(null);
     setActive(null);
     setLine(START);
   };
 
-  const moveToLibrary = () => {
-    let lib = sanitizeLibrary(readJSON('library', null));
-    const before = lib.words.length;
-    for (const c of rec.collected) {
-      lib = addWord(lib, {
-        id: c.id,
-        surface: c.surface,
-        meaning: c.meaning,
-        sentence: c.sentence,
-        bookId: null,
-        from: `찍먹 · ${passage.title}`,
-      });
-    }
-    writeJSON('library', lib);
-    setMoved(lib.words.length - before);
+  // 이 글로 블랭크북 — 지문이 주제 카드 한 장이 되고, 담은 단어(글에 적힌 꼴)가 빈칸이 된다.
+  const makeBlankBook = () => {
+    const body = passage.doc.paragraphs.map((p) => p.sentences.map((x) => x.text).join(' ')).join('\n\n');
+    let book = newBook(`찍먹 · ${passage.title}`, [newPage(passage.title, body)]);
+    for (const c of rec.collected) book = toggleTerm(book, c.surface);
+    writeJSON(BLANK_KEY, upsertBook(sanitizeBlankStore(readJSON(BLANK_KEY, null)), book));
+    setMadeBook(book.id);
   };
 
   const step = rec.finished ? 3 : rec.collected.length + rec.peeked.length > 0 ? 2 : 1;
@@ -221,7 +213,7 @@ export function Taste() {
             지문 셋으로 <em>MolB 찍먹</em>
           </h2>
           <p className="section__lead">
-            앱의 리더를 그대로 옮겨 왔어요. 지문은 앱에 실린 글이고, 낱말 풀이와 문장 해석도 앱에 미리 적힌 그대로예요.
+            앱의 영어 리더를 그대로 옮겨 왔어요. 지문은 앱에 실린 글이고, 낱말 풀이와 문장 해석도 앱에 미리 적힌 그대로예요.
             로그인 · AI 없이 바로.
           </p>
         </header>
@@ -414,8 +406,8 @@ export function Taste() {
               tokenInfo={tokenInfo}
               quiz={quiz}
               onQuiz={setQuiz}
-              moved={moved}
-              onMove={moveToLibrary}
+              madeBook={madeBook}
+              onMakeBook={makeBlankBook}
               onNext={() => {
                 const i = PASSAGES.findIndex((p) => p.id === passage.id);
                 choose(PASSAGES[(i + 1) % PASSAGES.length]!.id);
@@ -512,8 +504,8 @@ function StudyLog({
   tokenInfo,
   quiz,
   onQuiz,
-  moved,
-  onMove,
+  madeBook,
+  onMakeBook,
   onNext,
 }: {
   passage: Passage;
@@ -521,8 +513,8 @@ function StudyLog({
   tokenInfo: Map<string, { lemma: string; phrase: string | null }>;
   quiz: boolean;
   onQuiz: (v: boolean) => void;
-  moved: number | null;
-  onMove: () => void;
+  madeBook: string | null;
+  onMakeBook: () => void;
   onNext: () => void;
 }) {
   const collected = new Set(rec.collected.map((c) => c.id));
@@ -632,8 +624,8 @@ function StudyLog({
           >
             담은 단어로 뜻 적기 퀴즈
           </button>
-          <button type="button" className="btn btn--outline" disabled={rec.collected.length === 0} onClick={onMove}>
-            블랭크북 단어장으로 옮기기
+          <button type="button" className="btn btn--outline" disabled={rec.collected.length === 0 || madeBook != null} onClick={onMakeBook}>
+            이 글로 블랭크북 만들기
           </button>
           <button type="button" className="btn btn--ghost" onClick={onNext}>
             다음 지문 <ArrowRight size={16} />
@@ -641,9 +633,10 @@ function StudyLog({
           <ReviewOffBadge />
         </div>
       )}
-      {moved != null && (
+      {madeBook != null && (
         <p className="study-log__moved" role="status">
-          {moved > 0 ? `${moved}개를 옮겼어요.` : '이미 다 옮겨져 있어요.'} <a href="#/blankbook">블랭크북에서 보기</a>
+          블랭크북에 학습주제를 만들었어요 — 담은 단어 {rec.collected.length}개가 빈칸이 돼요.{' '}
+          <a href={`#/blankbook/${madeBook}/quiz`}>바로 맞춰 보기</a>
           {' · '}
           <a href={LINKS.play} target="_blank" rel="noopener noreferrer">
             앱에서 이어 하기

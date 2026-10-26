@@ -7,7 +7,7 @@ export function Footer() {
         <div className="site-footer__brand">
           <span className="brand__name">MolB</span>
           <span className="brand__world">World</span>
-          <p>읽은 만큼, 넓어지는 세상.</p>
+          <p>공부한 만큼, 넓어지는 세상.</p>
         </div>
         <ul className="site-footer__links">
           <li>

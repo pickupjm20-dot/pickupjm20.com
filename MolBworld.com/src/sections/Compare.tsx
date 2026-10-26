@@ -1,21 +1,21 @@
 import { ReviewOffBadge } from '../components/ReviewOffBadge';
 
 const ROWS: { what: string; site: React.ReactNode; app: string }[] = [
-  { what: '읽을거리', site: '앱의 지문 셋 + 내가 붙여 넣은 글', app: '하루 아홉 칸 · 오늘의 토익 · 내 파일' },
-  { what: '낱말 풀이', site: '미리 적은 풀이(지문) · 내장 사전 약 5천 단어(블랭크북)', app: '미리 적은 풀이 + AI(서버를 거쳐서)' },
-  { what: '내 글 열기', site: '붙여 넣기 · .txt', app: '.txt · .pdf · .docx · 사진 OCR' },
-  { what: '단어장', site: '이 브라우저에 저장 · JSON/CSV 내보내기', app: '계정에 동기화 · 다의어는 뜻마다 카드' },
+  { what: '공부할 것', site: '앱의 영어 지문 셋(찍먹) · 내가 필기한 개념(블랭크북)', app: '영어 읽을거리 · 단어장 태그(자격증 · 과목) · PDF 교재' },
+  { what: '담는 법', site: '톡 · 꾹(찍먹), 따옴표 · 칠하기 · AI 자료 붙여 넣기(블랭크북)', app: '톡 · 꾹, ‘낱말 — 뜻’ 붙여 넣기, PDF 책에서 담기' },
+  { what: '자료 열기', site: '직접 적기 · 붙여 넣기 · .txt · .md', app: '.txt · .pdf · .docx · 사진 OCR' },
+  { what: '퀴즈', site: '빈칸 타자(블랭크북) · 뜻 적기(찍먹)', app: '빈칸 퀴즈 · 스피드 퀴즈 · 마을의 쪽지 시험' },
   {
     what: '복습',
     site: (
       <>
-        무작위 뜻 적기, 맞힌 횟수만 <ReviewOffBadge />
+        안 푼 것 · 틀린 것 먼저, 일정은 없음 <ReviewOffBadge />
       </>
     ),
-    app: 'FSRS-6가 낱말마다 복습일을 정하고, 형광펜이 옅어져요',
+    app: 'FSRS-6가 낱말마다 복습일을 정하고, 복습할 단어가 마을에 몽타주 · 신문 · 전단지로 붙어요',
   },
-  { what: '학습 로그', site: '찍먹의 ‘공부 끝!’', app: '‘공부 끝!’ + 주간 기록 + 문맥 퀴즈' },
-  { what: '몰비의 세상', site: '사진으로 구경 · 캐릭터 고르기', app: '방 · 마당 · 마을 · 다람그램 · 도감 · 일기장' },
+  { what: '기록', site: '이 브라우저에 저장 · JSON 내보내기 · 내 타자 등급', app: '계정에 동기화 · 태그별 단어장 · 학습 로그' },
+  { what: '몰비의 세상', site: '사진으로 구경 · 캐릭터 고르기', app: '방 · 마당 · 마을(이웃 · 전화 · 기차) · 다람그램 · 도감' },
 ];
 
 export function Compare() {
@@ -28,7 +28,7 @@ export function Compare() {
             사이트에서는 <em>맛보기</em>, 앱에서는 <em>매일</em>
           </h2>
           <p className="section__lead">
-            사이트는 MolB가 어떤 앱인지 직접 해 보고 시작하는 곳이에요. 매일 쌓이고 알아서 복습되는 건 앱의 몫이에요.
+            사이트는 MolB가 어떤 앱인지 직접 해 보고, 블랭크북으로 빈칸 공부를 하는 곳이에요. 매일 쌓이고 알아서 복습되는 건 앱의 몫이에요.
           </p>
         </header>
         <div className="compare__table" role="table" aria-label="사이트와 앱에서 되는 것" data-reveal>
