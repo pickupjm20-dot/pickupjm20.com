@@ -25,16 +25,13 @@
     />
     <link rel="preload" href="./fonts/Literata-Regular.ttf" as="font" type="font/ttf" crossorigin />
     <script>
-      // 첫 그림 전에 테마를 정한다 — 밤에 들어온 사람이 크림빛 화면을 한 번 보고 깜빡이지 않게.
+      // 고른 테마가 있으면 첫 그림 전에 세운다 — 깜빡이지 않게. 고른 적이 없으면 CSS가 기기 설정을 따른다.
       (function () {
         var t = null;
         try {
           t = JSON.parse(localStorage.getItem('molbworld.theme'));
         } catch (e) {}
-        if (t !== 'light' && t !== 'dark') {
-          t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        document.documentElement.setAttribute('data-theme', t);
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
       })();
     </script>
   </head>

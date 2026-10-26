@@ -128,6 +128,7 @@ function NoteCard({
   const [draft, setDraft] = useState(fromBook);
   const [painting, setPainting] = useState(false);
   const [fix, setFix] = useState<BlankToken | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const editing = useRef(false);
   const timer = useRef(0);
   const live = useRef({ book, draft, pageIndex });
@@ -241,17 +242,30 @@ function NoteCard({
                 </select>
               </label>
             )}
-            <button
-              type="button"
-              className="icon-btn icon-btn--sm icon-btn--danger"
-              aria-label="주제 삭제"
-              onClick={() => {
-                if (page.text.trim() && !window.confirm(`“${page.title.trim() || '(제목 없음)'}” 주제를 삭제할까요?`)) return;
-                onChange(removePage(book, pageIndex));
-              }}
-            >
-              <TrashIcon size={15} />
-            </button>
+            {confirmDelete ? (
+              <span className="note__confirm" role="alert">
+                이 주제를 지울까요?
+                <button type="button" className="link-btn" onClick={() => setConfirmDelete(false)}>
+                  취소
+                </button>
+                <button type="button" className="link-btn note__confirm-yes" onClick={() => onChange(removePage(book, pageIndex))}>
+                  지우기
+                </button>
+              </span>
+            ) : (
+              <button
+                type="button"
+                className="icon-btn icon-btn--sm icon-btn--danger"
+                aria-label="주제 삭제"
+                onClick={() => {
+                  // 글이 있으면 한 번 더 묻는다 — 브라우저 대화 상자 대신 그 자리에서.
+                  if (page.text.trim()) setConfirmDelete(true);
+                  else onChange(removePage(book, pageIndex));
+                }}
+              >
+                <TrashIcon size={15} />
+              </button>
+            )}
           </div>
         </>
       )}

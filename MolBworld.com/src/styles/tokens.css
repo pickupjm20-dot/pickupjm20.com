@@ -2,7 +2,8 @@
  * 색 · 글꼴 · 자 — 앱의 `lib/theme.dart`(TossColors · ReadingType)와 같은 값.
  *   오렌지(action) 버튼 · 행동 / 그린(growth) 진행 · 담은 단어 / 코랄(alert) 틀림 / 보라(reading) 읽기 · 숙어
  *   브라운(text) · 크림(base) 본문 · 바탕
- * 밤 테마는 앱 월드의 밤 방처럼 — 차가운 검정이 아니라 불 꺼진 나무 방의 갈색.
+ * 밤 테마는 앱 월드의 밤 방처럼 — 차가운 검정이 아니라 불 꺼진 나무 방의 갈색. 고른 적이 없으면 기기 설정(prefers-color-scheme)을,
+ * 고르면 data-theme을 따른다 — 같은 값을 두 번 적는 까닭이다.
  */
 
 @font-face {
@@ -70,6 +71,13 @@
   --meadow: #e6f1da;
   --trail: #f3e7d4;
 
+  /* 초록 바탕 위의 글자 · 칠하기의 '중간' 빛 · 마을 게시판의 나무 */
+  --on-growth: #ffffff;
+  --paint-mid: #f6ebc4;
+  --board-a: #c99a64;
+  --board-b: #a8794a;
+  --board-grain: rgb(0 0 0 / 0.025);
+
   --lv-a1: #9cc47f;
   --lv-a2: #6fa35a;
   --lv-b1: #e0b04f;
@@ -103,6 +111,71 @@
 @media (min-width: 720px) {
   :root {
     --read-size: 19px;
+  }
+}
+
+/* 기기 설정이 밤이고 낮을 따로 고르지 않았을 때 — 아래 data-theme='dark'와 같은 값 */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --bg: #17130f;
+    --bg-deep: #120f0b;
+    --surface: #221c16;
+    --surface-dim: #1c1712;
+    --border: #3a2f25;
+    --border-strong: #4b3e31;
+    --hairline: #5a4a3a;
+
+    --text: #f4eadb;
+    --text-2: #d3c3ae;
+    --text-3: #a99880;
+    --text-faint: #807060;
+
+    --action: #ef9b50;
+    --action-dark: #f6b274;
+    --action-ink: #24170b;
+    --action-tint: #3a2717;
+    --action-tint-border: #5a3d22;
+
+    --growth: #98c278;
+    --growth-bright: #aed38f;
+    --growth-tint: #222e1f;
+    --growth-tint-strong: #2c3c27;
+    --growth-tint-border: #3e5536;
+
+    --alert: #f27f67;
+    --alert-tint: #3b201a;
+    --alert-tint-border: #6a3529;
+
+    --reading: #b9a2df;
+    --reading-tint: #2a2335;
+    --reading-tint-border: #4a3d60;
+
+    --challenge: #86aee6;
+    --challenge-tint: #1d2838;
+
+    --mark: #2c3d27;
+    --mark-ink: #bfe0a2;
+    --peek-line: #ef9b50;
+    --hover-word: #33291f;
+
+    --meadow-top: #1b1f15;
+    --meadow: #1d2417;
+    --trail: #2a2219;
+
+    --on-growth: #17210f;
+    --paint-mid: #3a3218;
+    --board-a: #6c4f33;
+    --board-b: #4b3522;
+    --board-grain: rgb(0 0 0 / 0.08);
+
+    --lv-out: #4b3e31;
+
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+    --shadow-md: 0 6px 18px -6px rgb(0 0 0 / 0.55), 0 2px 6px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 24px 48px -18px rgb(0 0 0 / 0.7), 0 6px 16px rgb(0 0 0 / 0.35);
+    --glow: radial-gradient(60% 60% at 70% 30%, rgb(255 180 90 / 0.14), transparent 70%);
   }
 }
 
@@ -153,6 +226,12 @@
   --meadow-top: #1b1f15;
   --meadow: #1d2417;
   --trail: #2a2219;
+
+  --on-growth: #17210f;
+  --paint-mid: #3a3218;
+  --board-a: #6c4f33;
+  --board-b: #4b3522;
+  --board-grain: rgb(0 0 0 / 0.08);
 
   --lv-out: #4b3e31;
 

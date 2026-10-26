@@ -30,6 +30,16 @@ body.no-scroll {
   overflow: hidden;
 }
 
+/* 폰의 위 안전 영역(노치) — 붙은 머리줄 위로 글이 비쳐 지나가지 않게 바탕빛으로 덮는다 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 55;
+  background: var(--bg);
+}
+
 img {
   max-width: 100%;
   height: auto;
@@ -175,18 +185,10 @@ main:focus {
   box-shadow: 0 10px 22px -10px var(--action);
 }
 
-:root[data-theme='dark'] .btn--primary:hover:not(:disabled) {
-  color: var(--action-ink);
-}
-
 .btn--growth {
   background: var(--growth);
-  color: #fff;
+  color: var(--on-growth);
   box-shadow: 0 8px 18px -10px var(--growth);
-}
-
-:root[data-theme='dark'] .btn--growth {
-  color: #17210f;
 }
 
 .btn--growth:hover:not(:disabled) {
@@ -537,7 +539,7 @@ main:focus {
 
 .site-header {
   position: sticky;
-  top: 0;
+  top: env(safe-area-inset-top, 0px);
   z-index: 50;
   height: var(--header-h);
   background: color-mix(in srgb, var(--bg) 78%, transparent);
@@ -717,7 +719,7 @@ main:focus {
 
   .nav {
     position: fixed;
-    inset: var(--header-h) 0 auto 0;
+    inset: calc(var(--header-h) + env(safe-area-inset-top, 0px)) 0 auto 0;
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
@@ -816,7 +818,7 @@ main:focus {
 .toast {
   position: fixed;
   left: 50%;
-  bottom: 24px;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   z-index: 60;
   transform: translateX(-50%);
   max-width: calc(100% - 32px);
@@ -832,17 +834,18 @@ main:focus {
 
 /* ── 움직임 ───────────────────────────────────────── */
 
-[data-reveal] {
-  opacity: 0;
-  transform: translateY(18px);
-  transition:
-    opacity 0.7s var(--ease),
-    transform 0.7s var(--ease);
+/* 들어올 때 살짝 떠오르기 — 처음부터 보이는 채로(가만히 있어도 다 읽히게: 미리보기 그림 · 공유 링크도 같은 첫 장면을 본다) */
+[data-reveal].is-in {
+  animation: rise 0.7s var(--ease) both;
 }
 
-[data-reveal].is-in {
-  opacity: 1;
-  transform: none;
+@keyframes rise {
+  from {
+    transform: translateY(14px);
+  }
+  to {
+    transform: none;
+  }
 }
 
 @keyframes bob {
@@ -887,8 +890,7 @@ main:focus {
     scroll-behavior: auto !important;
   }
 
-  [data-reveal] {
-    opacity: 1;
-    transform: none;
+  [data-reveal].is-in {
+    animation: none;
   }
 }

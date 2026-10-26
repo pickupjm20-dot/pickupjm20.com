@@ -143,6 +143,8 @@ function BookCard({
   const acc = bookAccuracy(keys, stats);
   const due = reviewCount(keys, stats);
   const studied = book.studiedAt ? new Date(book.studiedAt) : null;
+  const [menu, setMenu] = useState<'closed' | 'open' | 'rename' | 'delete'>('closed');
+  const [name, setName] = useState(book.title);
   return (
     <li className="book-card" style={{ ['--cover' as string]: `var(${coverVar(book.id)})` }}>
       <button type="button" className="book-card__open" onClick={onOpen}>
@@ -164,31 +166,65 @@ function BookCard({
           )}
         </span>
       </button>
-      <details className="book-card__menu">
-        <summary aria-label={`${book.title} 이름 바꾸기 · 지우기`}>⋯</summary>
-        <div>
-          <button
-            type="button"
-            onClick={() => {
-              const t = window.prompt('학습주제 이름', book.title);
-              if (t != null && t.trim()) onRename(book.id, t.trim());
+      <div className="book-card__menu">
+        <button
+          type="button"
+          className="book-card__more"
+          aria-label={`${book.title} 이름 바꾸기 · 지우기`}
+          aria-expanded={menu !== 'closed'}
+          onClick={() => setMenu((m) => (m === 'closed' ? 'open' : 'closed'))}
+        >
+          ⋯
+        </button>
+        {menu === 'open' && (
+          <div className="book-card__pop">
+            <button type="button" onClick={() => setMenu('rename')}>
+              이름 바꾸기
+            </button>
+            <button type="button" className="danger" onClick={() => setMenu('delete')}>
+              지우기
+            </button>
+          </div>
+        )}
+        {menu === 'rename' && (
+          <form
+            className="book-card__pop"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (name.trim()) onRename(book.id, name.trim());
+              setMenu('closed');
             }}
           >
-            이름 바꾸기
-          </button>
-          <button
-            type="button"
-            className="danger"
-            onClick={() => {
-              if (window.confirm(`“${book.title}” 학습주제와 그 안의 필기 ${book.pages.length}개를 모두 삭제할까요?\n푼 기록이 함께 지워져요(타자 기록은 남아요).`)) {
-                onDelete(book.id);
-              }
-            }}
-          >
-            지우기
-          </button>
-        </div>
-      </details>
+            <label className="sr-only" htmlFor={`rename-${book.id}`}>
+              학습주제 이름
+            </label>
+            <input id={`rename-${book.id}`} className="field field--sm" value={name} onChange={(e) => setName(e.target.value)} autoFocus maxLength={120} />
+            <div className="book-card__pop-row">
+              <button type="button" onClick={() => setMenu('closed')}>
+                취소
+              </button>
+              <button type="submit" className="ok">
+                바꾸기
+              </button>
+            </div>
+          </form>
+        )}
+        {menu === 'delete' && (
+          <div className="book-card__pop" role="alertdialog" aria-label="학습주제 지우기">
+            <p>
+              필기 {book.pages.length}개와 푼 기록이 함께 지워져요. 타자 기록은 남아요.
+            </p>
+            <div className="book-card__pop-row">
+              <button type="button" onClick={() => setMenu('closed')}>
+                취소
+              </button>
+              <button type="button" className="danger" onClick={() => onDelete(book.id)}>
+                지우기
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </li>
   );
 }

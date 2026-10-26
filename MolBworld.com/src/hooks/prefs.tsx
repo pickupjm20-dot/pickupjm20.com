@@ -30,7 +30,9 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
     v === 'light' || v === 'dark' ? v : null,
   );
   const [system, setSystem] = useState<Theme>(() => (darkQuery()?.matches ? 'dark' : 'light'));
-  const theme = chosen ?? system;
+  // 고른 적이 없으면 뿌리에 이미 선 값(아티팩트 뷰어가 세운 것)을, 그것도 없으면 기기 설정을.
+  const host = document.documentElement.getAttribute('data-theme');
+  const theme = chosen ?? (host === 'dark' || host === 'light' ? host : system);
 
   useEffect(() => {
     const mq = darkQuery();
@@ -40,9 +42,10 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
     return () => mq.removeEventListener('change', on);
   }, []);
 
+  // 고른 때만 뿌리에 적는다 — 안 고른 사람은 CSS의 prefers-color-scheme이 맡고, 뷰어가 세운 값도 덮지 않는다.
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
+    if (chosen) document.documentElement.setAttribute('data-theme', chosen);
+  }, [chosen]);
 
   const value = useMemo<Prefs>(
     () => ({

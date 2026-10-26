@@ -9,6 +9,7 @@
  * 틀린 것 먼저(일정 없음 — '복습 알고리즘 꺼짐').
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Dialog } from '../components/Dialog';
 import { ArrowLeft } from '../components/Icons';
 import { ReviewOffBadge } from '../components/ReviewOffBadge';
 import type { BlankBook } from '../lib/blank/book';
@@ -42,6 +43,7 @@ export function BlankBookPage({ rest }: { rest: string[] }) {
   const storageOk = useStorageHealth();
   const [notice, setNotice] = useState('');
   const [typingOpen, setTypingOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
   const rounds = useRef(new Map<string, Round>());
   const [, bumpRounds] = useState(0);
   const typing = useMemo(() => typingStats(store.rounds), [store.rounds]);
@@ -155,7 +157,7 @@ export function BlankBookPage({ rest }: { rest: string[] }) {
                 rounds.current.delete(id);
                 setStore((cur) => deleteBook(cur, id));
               }}
-              onExport={() => download(`molb-blankbook-${today()}.json`, exportStore(store), 'application/json')}
+              onExport={() => setExportOpen(true)}
               onImport={(f) => void onImport(f)}
               onTyping={() => setTypingOpen(true)}
               onNotice={setNotice}
@@ -164,6 +166,7 @@ export function BlankBookPage({ rest }: { rest: string[] }) {
         )}
       </div>
       {typingOpen && <TypingSheet stats={typing} onClose={() => setTypingOpen(false)} />}
+      {exportOpen && <ExportSheet json={exportStore(store)} onClose={() => setExportOpen(false)} onNotice={setNotice} />}
       {notice && (
         <p className="toast" role="status">
           {notice}
@@ -261,5 +264,40 @@ function Study({
         />
       )}
     </div>
+  );
+}
+
+/**
+ * 내보내기 — 파일로 받기, 그리고 글로 복사하기. 파일 받기가 막힌 곳(앱 안의 보기 · 일부 브라우저)에서도 옮길 수 있게 JSON을 그대로
+ * 보여 주고 복사 단추를 둔다. 가져오기는 그 글을 .json 파일로 저장해 책장의 '가져오기'로.
+ */
+function ExportSheet({ json, onClose, onNotice }: { json: string; onClose: () => void; onNotice: (m: string) => void }) {
+  const area = useRef<HTMLTextAreaElement>(null);
+  return (
+    <Dialog title="블랭크북 내보내기" onClose={onClose} wide>
+      <p className="export__lead">학습주제 · 푼 기록 · 타자 기록을 JSON으로 옮겨요. 다른 브라우저의 블랭크북에서 ‘가져오기’로 살릴 수 있어요.</p>
+      <textarea ref={area} className="field export__json" readOnly value={json} rows={8} aria-label="내보낸 JSON" onFocus={(e) => e.currentTarget.select()} />
+      <div className="newtopic__actions">
+        <button type="button" className="btn btn--ghost" onClick={() => download(`molb-blankbook-${today()}.json`, json, 'application/json')}>
+          파일로 받기
+        </button>
+        <button
+          type="button"
+          className="btn btn--primary"
+          onClick={() => {
+            navigator.clipboard
+              ?.writeText(json)
+              .then(() => onNotice('복사했어요 — 메모장에 붙여 넣어 .json으로 저장해 두세요'))
+              .catch(() => {
+                area.current?.focus();
+                area.current?.select();
+                onNotice('복사가 막혀 있어요 — 칸의 글을 직접 골라 복사해요');
+              });
+          }}
+        >
+          복사하기
+        </button>
+      </div>
+    </Dialog>
   );
 }
