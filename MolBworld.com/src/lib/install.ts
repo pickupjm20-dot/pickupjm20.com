@@ -23,9 +23,9 @@ export function startOffline(): void {
     deferred = null;
     tell();
   });
-  // 일꾼은 빌드판 · 안전한 곳(https · localhost)에서만. 아티팩트 뷰어처럼 허락하지 않는 곳(샌드박스 iframe)에서는
-  // navigator.serviceWorker를 읽기만 해도 던질 수 있다 — 조용히 넘어간다(사이트는 일꾼 없이도 돈다).
-  if (!import.meta.env.PROD || !window.isSecureContext) return;
+  // 일꾼은 빌드판 · 안전한 곳(https · localhost) · 맨 위 창에서만. 남의 화면 안(아티팩트 뷰어 같은 iframe)에서는 붙일 일꾼도 없고,
+  // 샌드박스면 navigator.serviceWorker를 읽기만 해도 던질 수 있다 — 조용히 넘어간다(사이트는 일꾼 없이도 돈다).
+  if (!import.meta.env.PROD || !window.isSecureContext || window.top !== window.self) return;
   window.addEventListener('load', () => {
     try {
       navigator.serviceWorker?.register('./sw.js').catch(() => {});
@@ -41,6 +41,8 @@ function current(): InstallState {
   const standalone =
     window.matchMedia?.('(display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone === true;
   if (standalone) return 'installed';
+  // 남의 화면 안(아티팩트 뷰어 같은 iframe)에서는 홈 화면에 둘 것이 이 사이트가 아니다 — 안내하지 않는다.
+  if (window.top !== window.self) return 'none';
   if (deferred) return 'prompt';
   if (/iPhone|iPad|iPod/.test(navigator.userAgent)) return 'ios';
   return 'none';
