@@ -93,6 +93,14 @@ def main(molb: Path) -> None:
     icon.resize((180, 180), Image.LANCZOS).save(PUBLIC / "apple-touch-icon.png")
     icon.resize((64, 64), Image.LANCZOS).save(PUBLIC / "favicon.png")
 
+    # 홈 화면 아이콘(웹 앱 매니페스트) — 크림 바탕을 꽉 채운 네모. 안드로이드는 투명한 아이콘에 흰 판을 깔아 다람쥐가 작아 보인다.
+    # maskable은 기기가 동그라미 · 둥근 네모로 깎으므로 그림을 가운데 62%(안전 구역 80% 원 안)에 둔다.
+    for size, scale, name in [(192, 0.86, "icon-192.png"), (512, 0.86, "icon-512.png"), (512, 0.62, "icon-maskable-512.png")]:
+        tile = Image.new("RGBA", (size, size), (0xFB, 0xF6, 0xED, 255))
+        art = icon.resize((round(size * scale), round(size * scale)), Image.LANCZOS)
+        tile.alpha_composite(art, ((size - art.width) // 2, (size - art.height) // 2))
+        tile.convert("RGB").save(PUBLIC / name, "PNG", optimize=True)
+
     fonts = PUBLIC / "fonts"
     fonts.mkdir(parents=True, exist_ok=True)
     for f in ["Literata-Regular.ttf", "Literata-Italic.ttf", "OFL.txt"]:

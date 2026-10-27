@@ -166,6 +166,10 @@ export function QuizRunner({
           onChange={(e) => setGiven(e.target.value)}
           placeholder="뜻을 한국어로 적어요"
           autoComplete="off"
+          spellCheck={false}
+          enterKeyHint={checked ? 'next' : 'done'}
+          autoCapitalize="off"
+          autoCorrect="off"
           readOnly={checked}
         />
         <button type="submit" className="btn btn--primary">

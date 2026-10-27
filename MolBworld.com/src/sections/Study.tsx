@@ -192,6 +192,10 @@ function Wanted({ word, tag }: { word: Word; tag: string }) {
           }}
           placeholder="이 낱말은? 쳐서 신고하기"
           autoComplete="off"
+          spellCheck={false}
+          enterKeyHint="send"
+          autoCapitalize="off"
+          autoCorrect="off"
           disabled={result === true}
         />
         <button type="submit" className="btn btn--primary btn--sm" disabled={result === true}>

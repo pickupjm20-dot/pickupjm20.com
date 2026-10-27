@@ -56,11 +56,13 @@ Node 22에서 확인했다.
 | `base: './'` | 같은 빌드를 어느 경로에 올려도 된다(나중에 molbworld.com 뿌리로 옮겨도). |
 | 서버 · AI 없음 | 키를 사이트에 둘 수 없다. 찍먹은 미리 적은 풀이, 블랭크북은 사람이 적은 필기 + 기기의 조사 짐작. |
 | localStorage | 로그인 없이 바로 쓰게. 읽기 · 쓰기는 전부 try/catch — 사생활 창 · 꽉 찬 저장소에서도 화면은 돌고, 책장이 띠로 알린다. |
+| 매니페스트 + 손으로 쓴 오프라인 일꾼 | 폰 홈 화면에 두면 앱처럼(주소창 없이) 열리고, 한 번 연 뒤로는 인터넷 없이도 돈다. 서버가 없는 사이트라 빌드의 파일(약 1.7MB)을 다 미리 받으면 끝이어서, 플러그인 대신 `vite.config.ts`의 `offline()` 수십 줄이 빌드 끝에 `dist/sw.js`를 짓는다. |
 
 ## 지도
 
 ```
-index.html              첫 그림 전에 낮/밤 테마를 정하는 스크립트, 공유 미리보기(og)
+index.html              첫 그림 전에 낮/밤 테마를 정하는 스크립트, 공유 미리보기(og), 매니페스트
+vite.config.ts          offline() — 빌드 끝에 dist/sw.js(오프라인 일꾼)를 짓는다
 src/
   App.tsx               해시 라우터 · 머리줄 · 바닥줄
   pages/HomePage.tsx    히어로 → 흐름 → 무엇을 공부하나 → 찍먹 → 블랭크북 소개 → 몰비의 세상 → 사이트와 앱 → 자주 묻는 것
@@ -73,13 +75,40 @@ src/
     blank/              블랭크북 — josa(조사) · book(책 · 어절 · 자리) · material(따옴표 자료 · 부탁 글 · 카드 글) ·
                         pick(규칙으로 먼저 칠하기) · quiz(문제 · 채점 · 글자 차이) · typing(타수 · 등급) · store(장부) · samples
     storage.ts          localStorage 손잡이
+    install.ts          오프라인 일꾼 붙이기 · 홈 화면에 두기(안드로이드 설치 단추 · 아이폰 안내)
   content/passages/     찍먹 지문(앱의 refresh_0 · 2 · 14 그대로)
   styles/               tokens.css(앱 theme.dart의 색 · 글꼴 · 본문 자) · base · home · reader · blankbook
 public/
   img/                  캐릭터 다섯 × 몸짓 다섯 · 앱 아이콘 · 지문 그림 · 월드 사진(광고 13판의 에뮬레이터 원본)
   fonts/                Literata(OFL) — 앱의 본문 글꼴
-scripts/import_assets.py   MolB 저장소에서 위의 것을 옮기고 웹에 맞게 줄인다
+public/manifest.webmanifest · icon-*.png   홈 화면에 둘 때의 이름 · 아이콘
+scripts/import_assets.py   MolB 저장소에서 위의 것을 옮기고 웹에 맞게 줄인다(홈 화면 아이콘도)
+scripts/sw.template.js     오프라인 일꾼의 틀 — 판 · 파일 목록은 빌드가 채운다
 ```
+
+## 폰에서
+
+- **홈 화면에 두기** — 안드로이드 크롬은 '앱 설치'(또는 바닥줄의 📲 단추), 아이폰은 사파리의 공유 → 홈 화면에 추가. 아이콘은 크림 바탕의
+  다람쥐(`public/icon-*.png`, maskable 포함 — `scripts/import_assets.py`가 짓는다), 바로 가기 둘(블랭크북 · 찍먹).
+- **오프라인** — `dist/sw.js`(틀은 `scripts/sw.template.js`)가 설치 때 빌드의 파일을 전부 받아 둔다(공유 미리보기 그림 · 글꼴 허가서만 뺌).
+  쪽 이동은 그 판의 index.html을 곧장 주고, 나머지는 캐시 먼저. 새로 올리면 sw.js의 판(파일 내용 해시)이 바뀌어 브라우저가 새 일꾼을
+  받고, 새 판을 다 받은 뒤 옛 캐시를 지운다 — 다음에 열 때 새 판이 선다. 일꾼은 빌드판 · https(또는 localhost)에서만 붙고, 붙일 수 없는 곳
+  (아티팩트 뷰어 같은 샌드박스)에서는 조용히 넘어간다. Pretendard(CDN)는 안 받아 두어 오프라인이면 기기 한글 글꼴로 그린다.
+- **확인한 것**(Playwright 폰 흉내 — 터치 · 320 · 360 · 412px): 가로 넘침 없음, 톡 · 꾹(길게 눌러도 글자 선택 · 메뉴가 안 뜸) · 글 위를 끌어
+  굴리면 안 담김, 해석 · 공부 끝 · 뜻 적기 퀴즈, 블랭크북 예시 → 맞춰 보기(Enter로 확인 · 다음, 확인 뒤에도 칸에 머물러 자판이 안 내려감),
+  새로고침 뒤 장부, 오프라인에서 다시 열기 · 블랭크북 · 찍먹 그림, 새 판 바꿔 끼우기, `/pickupjm20.com/MolBworld.com/` 하위 경로.
+- 폰 자판 — 답 칸은 `enterkeyhint`(완료 · 다음 · 보내기), 영어 답의 첫 글자 대문자 · 자동 고침 끔. 손가락 기기에서는 입력 칸 글자를 16px
+  아래로 안 내린다(iOS 사파리가 그보다 작은 칸을 누르면 화면을 키운다). 토스트는 폰에서 머리줄 아래로(아래쪽은 자판 · 정답 자리).
+
+## 올리기 — GitHub Pages
+
+`.github/workflows/molbworld.yml`이 **main**에 들어온 것을 Pages에 올린다(다른 가지 · PR은 검사 · 빌드만). 사이트는 `/MolBworld.com/`,
+저장소 뿌리(`/`)는 그리로 넘겨 준다.
+
+- 주소: `https://pickupjm20-dot.github.io/pickupjm20.com/MolBworld.com/` — pickupjm20.com 도메인을 Pages에 붙이면 `pickupjm20.com/MolBworld.com/`.
+- **처음 한 번** 저장소 Settings → Pages → Build and deployment의 Source를 **GitHub Actions**로. 안 골랐으면 워크플로의 configure-pages가
+  그렇다고 말하며 멈춘다.
+- 손으로 다시 올리기: Actions → MolB World → Run workflow(main).
 
 ## 앱과의 관계 — 정본은 MolB
 
@@ -105,8 +134,8 @@ python3 scripts/import_assets.py ../../MolB   # MolB-1.4.0(또는 그 뒤) 체�
 
 ## 남은 것
 
-- 도메인 — 지금은 이 저장소(`pickupjm20.com`)의 `MolBworld.com/` 폴더다. 올릴 곳(GitHub Pages · pickupjm20.com 하위 경로 ·
-  molbworld.com)을 정하면 `dist/`를 그대로 올린다. 배포 워크플로는 아직 없다(CI는 빌드 · 검사만).
+- 도메인 — GitHub Pages(위 '올리기')로 `…github.io/pickupjm20.com/MolBworld.com/`. pickupjm20.com · molbworld.com 도메인을 붙일지는
+  아직이다(붙이면 Settings → Pages → Custom domain, 빌드는 그대로).
 - 공유 미리보기 — `index.html`의 `og:image`는 상대 경로(`./img/og.jpg`)다. 몇몇 메신저는 절대 주소만 읽으니, 도메인이
   정해지면 `https://…/img/og.jpg`로 바꾼다.
 - 1.4.0 화면 사진 — 태그 단어장 · 빈칸 퀴즈 · 마을의 인쇄물 사진이 나오면 무엇을 공부하나 절의 CSS 그림을 사진으로 바꾼다.

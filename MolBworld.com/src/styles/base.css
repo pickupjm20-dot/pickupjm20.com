@@ -76,6 +76,15 @@ button {
   cursor: pointer;
 }
 
+/* iOS 사파리는 글자가 16px보다 작은 입력 칸을 누르면 화면을 확대하고 돌려놓지 않는다 — 손가락 기기에서는 입력 칸만 16px 아래로 안 내린다. */
+@media (pointer: coarse) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']),
+  textarea,
+  select {
+    font-size: max(16px, 1em);
+  }
+}
+
 mark {
   background: var(--mark);
   color: var(--mark-ink);
@@ -437,6 +446,17 @@ main:focus {
   transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
 }
 
+/* 보이는 알약은 24px이지만 손가락에는 작다 — 눌리는 자리만 위아래 10px씩 넓힌다(44px). */
+.review-off__pill {
+  position: relative;
+}
+
+.review-off__pill::after {
+  content: '';
+  position: absolute;
+  inset: -10px -4px;
+}
+
 .review-off__pill:hover,
 .review-off__pill[aria-expanded='true'] {
   color: var(--text-2);
@@ -757,6 +777,17 @@ main:focus {
   }
 }
 
+/* 320px 폰(아이폰 SE 1세대 · 접는 폰의 바깥 화면) — 로고 · 단추 셋이 한 줄에 안 든다. 'World' 딱지를 내리고 이름을 줄인다. */
+@media (max-width: 359px) {
+  .brand__world {
+    display: none;
+  }
+
+  .brand__name {
+    font-size: 21px;
+  }
+}
+
 /* ── 바닥줄 ───────────────────────────────────────── */
 
 .site-footer {
@@ -784,6 +815,21 @@ main:focus {
   flex-basis: 100%;
   color: var(--text-3);
   font-size: 14px;
+}
+
+.site-footer__install {
+  margin-top: 6px;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.35;
+  padding-block: 7px;
+}
+
+.site-footer__brand .site-footer__install-tip {
+  margin-top: 4px;
+  max-width: 34em;
+  line-height: 1.6;
+  color: var(--text-2);
 }
 
 .site-footer__links {
@@ -830,6 +876,16 @@ main:focus {
   font-size: 14px;
   box-shadow: var(--shadow-lg);
   animation: toast-in 0.25s var(--ease);
+  /* 알리기만 한다 — 밑의 단추 · 칸을 가로막지 않게 */
+  pointer-events: none;
+}
+
+/* 폰에서는 머리줄 바로 아래로 — 아래쪽은 자판이 올라오고 맞춰 보기의 칸 · 정답이 서는 자리다(그것을 3.6초 가리던 것을 옮김). */
+@media (max-width: 720px) {
+  .toast {
+    top: calc(var(--header-h) + 10px + env(safe-area-inset-top, 0px));
+    bottom: auto;
+  }
 }
 
 /* ── 움직임 ───────────────────────────────────────── */

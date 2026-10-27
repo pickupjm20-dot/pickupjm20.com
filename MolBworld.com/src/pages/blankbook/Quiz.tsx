@@ -229,6 +229,10 @@ export function Quiz({ book, stats, rounds, round, ignoreSpace, onIgnoreSpace, o
               placeholder="빈칸에 들어갈 내용을 입력하고 Enter"
               autoComplete="off"
               spellCheck={false}
+              // 폰 자판 — Enter 자리에 '완료/다음'이 서고, 영어 답의 첫 글자를 대문자로 · 낱말을 고쳐 쓰지 않게(답이 바뀐다).
+              enterKeyHint={showing ? 'next' : 'done'}
+              autoCapitalize="off"
+              autoCorrect="off"
               onChange={(e) => {
                 if (showing) return;
                 if (firstKeyAt.current == null && e.target.value) firstKeyAt.current = Date.now();

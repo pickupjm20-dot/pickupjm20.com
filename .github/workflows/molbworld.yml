@@ -1,4 +1,9 @@
-# MolB World(MolBworld.com/) — 타입 · 검사 · 빌드. 배포는 하지 않는다(올릴 곳을 정하면 따로 붙인다).
+# MolB World(MolBworld.com/) — 타입 · 검사 · 빌드, 그리고 main이면 GitHub Pages에 올린다.
+#
+# 올리는 꼴: <페이지 주소>/MolBworld.com/ 에 사이트, 뿌리(/)는 그리로 넘겨 주는 쪽 하나. 저장소 이름이 pickupjm20.com이라 주소는
+#   https://pickupjm20-dot.github.io/pickupjm20.com/MolBworld.com/
+# 이고, 나중에 pickupjm20.com 도메인을 Pages에 붙이면 그대로 pickupjm20.com/MolBworld.com/ 이 된다(빌드가 base './' · 해시 이동이라 경로를
+# 안 탄다). 처음 한 번은 저장소 Settings → Pages → Source를 'GitHub Actions'로 골라 둬야 한다 — 안 골랐으면 configure-pages가 그렇다고 말하며 멈춘다.
 name: MolB World
 
 on:
@@ -11,6 +16,9 @@ on:
       - 'MolBworld.com/**'
       - '.github/workflows/molbworld.yml'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 defaults:
   run:
@@ -34,3 +42,51 @@ jobs:
           name: molbworld-dist
           path: MolBworld.com/dist
           retention-days: 14
+
+      # ── 여기부터 main만: Pages에 올릴 묶음 ──
+      - name: Pages 묶음 짓기 (/MolBworld.com/ + 뿌리의 넘겨 주기)
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        working-directory: .
+        run: |
+          mkdir -p _site/MolBworld.com
+          cp -r MolBworld.com/dist/. _site/MolBworld.com/
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="ko">
+            <head>
+              <meta charset="utf-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1" />
+              <title>MolB World</title>
+              <meta http-equiv="refresh" content="0; url=./MolBworld.com/" />
+              <link rel="canonical" href="./MolBworld.com/" />
+            </head>
+            <body style="font-family: sans-serif; padding: 24px">
+              <a href="./MolBworld.com/">MolB World로 가기</a>
+            </body>
+          </html>
+          HTML
+          cp _site/index.html _site/404.html
+          touch _site/.nojekyll
+      - uses: actions/configure-pages@v5
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          path: _site
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}MolBworld.com/
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

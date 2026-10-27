@@ -1607,12 +1607,13 @@
 
 .study-feats {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
 }
 
 .study-feats li {
   display: grid;
-  grid-template-columns: 34px 1fr;
+  grid-template-columns: 34px minmax(0, 1fr);
   gap: 12px;
   padding: 16px;
   border-radius: var(--radius);
@@ -1645,7 +1646,7 @@
 }
 
 .study-feats li.study-feats__cta {
-  grid-template-columns: 56px 1fr;
+  grid-template-columns: 56px minmax(0, 1fr);
   align-items: center;
   background: var(--action-tint);
   border-color: var(--action-tint-border);
@@ -1660,6 +1661,15 @@
 .study-feats__cta p {
   margin-bottom: 8px;
   color: var(--text);
+}
+
+/* '#정보처리기사 예시로 맞춰 보기'는 360px 폰에서 칸보다 길다 — 한 줄을 고집하면 화면이 옆으로 밀린다. */
+.study-feats__cta .btn {
+  white-space: normal;
+  text-align: left;
+  min-height: 36px;
+  padding-block: 7px;
+  line-height: 1.35;
 }
 
 .village-board {
@@ -1916,7 +1926,7 @@
 
 @media (max-width: 960px) {
   .study-sec__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
