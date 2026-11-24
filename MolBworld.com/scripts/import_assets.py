@@ -1,6 +1,6 @@
 """MolB 저장소에서 사이트가 쓸 것을 옮겨 온다.
 
-    python3 scripts/import_assets.py ../../MolB      # MolB-1.4.0 가지(또는 그 뒤)의 체크아웃
+    python3 scripts/import_assets.py ../../MolB      # 서재 · 섬 이미지가 있는 앱 체크아웃
 
 앱이 정본이다 — 그림 · 글꼴 · 지문 · 사전은 손으로 고치지 말고 MolB에서 고친 뒤 이 스크립트를 다시 돌린다.
 웹에 맞게 줄이는 것만 여기서 한다(스토어 사진 1~2MB → 폭 540px webp).
@@ -17,22 +17,6 @@ PUBLIC = SITE / "public"
 
 # 찍먹 지문 셋 — 쉬움 · 보통 · 조금 어려움. 앱의 번들 글(assets/reading/text) 그대로다.
 PASSAGES = ["refresh_0", "refresh_2", "refresh_14"]
-
-# 월드 구경에 쓰는 에뮬레이터 사진(광고 13판의 원본). 이름은 사이트에서 부르는 이름.
-SHOTS = {
-    "13-room-stage1.png": "room-stage1",
-    "13-room-stage3.png": "room-stage3",
-    "13-room-front.png": "room-front",
-    "13-box-place.png": "box-place",
-    "13-door-threshold.png": "door-threshold",
-    "13-reader.png": "reader-nine",
-    "11-garden-dusk.png": "garden-dusk",
-    "11-room-english.png": "room-english",
-    "11-room-night.png": "room-night",
-    "11-kupeng.png": "kupeng",
-    "11-dex.png": "dex",
-    "10-chat.png": "chat",
-}
 
 # 앱의 그림 아이콘(하단바 · 메인의 길) — 사이트의 흐름 · 블랭크북 카드에 쓴다.
 ICONS = ["book_open", "review_quiz", "tree_medium", "notebook", "acorn", "diary"]
@@ -64,6 +48,23 @@ def webp(src: Path, dst: Path, width: int, quality: int = 80) -> None:
     img.save(dst, "WEBP", quality=quality, method=6)
 
 
+def import_scenes(molb: Path) -> None:
+    dest = PUBLIC / "img/world"
+    webp(molb / "assets/seojae/plate.webp", dest / "study-desk.webp", 540, 86)
+
+    design = molb / "docs/room_design"
+    for place in ("bakery", "mart", "greenhouse"):
+        webp(design / "hwan_world" / f"world-{place}.png", dest / f"island-{place}.webp", 600)
+
+    # 같은 시점의 Windows 미리보기에서 조작 패널을 제외한 풍경만 자른다.
+    for light in ("afternoon", "dusk"):
+        with Image.open(design / "molb_style_v1" / f"live-{light}.jpg") as capture:
+            scene = capture.crop((72, 106, 1152, 556))
+            scene.resize((960, 400), Image.LANCZOS).save(dest / f"island-{light}.webp", quality=86, method=6)
+            if light == "afternoon":
+                scene.save(PUBLIC / "img/og.jpg", quality=84, optimize=True)
+
+
 def main(molb: Path) -> None:
     # 지문 — 글 파일은 그대로, 그림은 폭 900.
     texts = SITE / "src" / "content" / "passages"
@@ -74,12 +75,7 @@ def main(molb: Path) -> None:
         image = src.read_text(encoding="utf-8").splitlines()[0].split(":", 1)[1].split("|")[0].strip()
         webp(molb / "assets/reading" / image, PUBLIC / "img/passages" / image, 900)
 
-    for src_name, out in SHOTS.items():
-        webp(molb / "광고/원본/앱화면" / src_name, PUBLIC / "img/world" / f"{out}.webp", 540, 78)
-
-    # 피처 그래픽은 공유 미리보기(og:image)라 jpg로 — 메신저 몇은 webp를 안 그린다.
-    feature = Image.open(molb / "광고/13-0_플레이_피처그래픽_방_1024x500.png").convert("RGB")
-    feature.save(PUBLIC / "img/og.jpg", "JPEG", quality=84, optimize=True)
+    import_scenes(molb)
 
     for who in ["squirrel", "frog", "hedgehog", "owl", "penguin"]:
         for pose in POSES:
@@ -106,7 +102,7 @@ def main(molb: Path) -> None:
     for f in ["Literata-Regular.ttf", "Literata-Italic.ttf", "OFL.txt"]:
         shutil.copyfile(molb / "assets/fonts/literata" / f, fonts / f)
 
-    print(f"passages {len(PASSAGES)} · shots {len(SHOTS)} · icons {len(ICONS)}")
+    print(f"passages {len(PASSAGES)} · icons {len(ICONS)}")
 
 
 if __name__ == "__main__":

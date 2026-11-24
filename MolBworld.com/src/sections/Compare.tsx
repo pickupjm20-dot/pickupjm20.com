@@ -2,6 +2,7 @@ import { ReviewOffBadge } from '../components/ReviewOffBadge';
 
 const ROWS: { what: string; site: React.ReactNode; app: string }[] = [
   { what: '공부할 것', site: '앱의 영어 지문 셋(찍먹) · 내가 필기한 개념(블랭크북)', app: '영어 읽을거리 · 단어장 태그(자격증 · 과목) · PDF 교재' },
+  { what: '읽기', site: '지문 셋으로 낱말 담기 체험', app: '서재에서 읽던 책 이어 보기 · 하루 아홉 칸 · 도서관' },
   { what: '담는 법', site: '톡 · 꾹(찍먹), 따옴표 · 칠하기 · AI 자료 붙여 넣기(블랭크북)', app: '톡 · 꾹, ‘낱말 — 뜻’ 붙여 넣기, PDF 책에서 담기' },
   { what: '자료 열기', site: '직접 적기 · 붙여 넣기 · .txt · .md', app: '.txt · .pdf · .docx · 사진 OCR' },
   { what: '퀴즈', site: '빈칸 타자(블랭크북) · 뜻 적기(찍먹)', app: '빈칸 퀴즈 · 스피드 퀴즈 · 마을의 쪽지 시험' },
@@ -15,7 +16,7 @@ const ROWS: { what: string; site: React.ReactNode; app: string }[] = [
     app: 'FSRS-6가 낱말마다 복습일을 정하고, 복습할 단어가 마을에 몽타주 · 신문 · 전단지로 붙어요',
   },
   { what: '기록', site: '이 브라우저에 저장 · JSON 내보내기 · 내 타자 등급', app: '계정에 동기화 · 태그별 단어장 · 학습 로그' },
-  { what: '몰비의 세상', site: '사진으로 구경 · 캐릭터 고르기', app: '방 · 마당 · 마을(이웃 · 전화 · 기차) · 다람그램 · 도감' },
+  { what: '몰비의 세상', site: '사진으로 구경 · 캐릭터 고르기', app: '섬 산책 · 가게에서 영어로 주문 · 몰비의 일기 · 다람그램' },
 ];
 
 export function Compare() {

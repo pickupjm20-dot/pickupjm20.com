@@ -9,15 +9,15 @@ export function Hero() {
       <div className="hero__glow" aria-hidden="true" />
       <div className="container hero__grid">
         <div className="hero__copy" data-reveal>
-          <p className="eyebrow">영어 · 자격증 · 학교 공부 × 나만의 작은 세상</p>
+          <p className="eyebrow">영어 읽기 · 교재 복습 · 몰비의 섬</p>
           <h1 id="hero-title" className="hero__title">
-            공부한 만큼,
+            서재에서 읽고,
             <br />
-            몰비의 <em>세상이 넓어져요</em>
+            <em>섬에서 써 봐요</em>
           </h1>
           <p className="hero__lead">
-            영어 단어도, 자격증 용어도, 시험 범위의 개념도. 과목마다 단어장을 <b>태그</b>로 나눠 담으면, 복습할 때가 된 단어가 다람쥐
-            몰비의 마을에 몽타주 · 신문 · 쪽지 시험으로 붙어요.
+            몰비의 서재에서 읽던 책을 펼쳐 보세요. 모르는 낱말은 눌러서 단어장에 담고,
+            섬에서는 마트에 들러 영어로 달걀을 주문해요.
           </p>
           <div className="hero__cta">
             <a
@@ -44,10 +44,10 @@ export function Hero() {
         <div className="hero__stage" data-reveal>
           <div className="phone phone--hero">
             <img
-              src={asset('img/world/room-front.webp')}
-              alt="MolB 앱의 월드 — 다람쥐 몰비가 사는 나무 방, 창밖으로 마당과 마을이 보인다"
+              src={asset('img/world/study-desk.webp')}
+              alt="몰비의 서재 일러스트. 햇살이 드는 창가 책상 위에 책과 연필이 놓여 있다"
               width={540}
-              height={1200}
+              height={1038}
               fetchPriority="high"
             />
           </div>

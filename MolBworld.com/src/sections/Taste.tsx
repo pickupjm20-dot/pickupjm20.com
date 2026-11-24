@@ -181,7 +181,7 @@ export function Taste() {
   const finish = () => {
     update((r) => ({ ...r, finished: true }));
     setActive(null);
-    setLine({ pose: 'dance', text: '오늘 한 편 끝! 대박, 나 방에 뭐 생기는 거야?' });
+    setLine({ pose: 'dance', text: '오늘 한 편 끝! 어떤 낱말이 기억나?' });
     requestAnimationFrame(() => logRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   };
 
@@ -274,7 +274,7 @@ export function Taste() {
                 <span className="guide__tag">결과</span>
                 <p>
                   AI 없이 방금 누른 기록만으로 <b>학습 로그</b>(담은 · 헷갈린 · 그냥 읽은 단어)와 <b>뜻 적기 퀴즈</b>.
-                  앱이라면 담은 단어가 몰비 방의 물건이 돼요.
+                  앱에서는 담은 낱말을 내 단어장에서 다시 볼 수 있어요.
                 </p>
               </li>
             </ol>
@@ -601,10 +601,9 @@ function StudyLog({
       </div>
 
       <div className="study-log__app">
-        <img src={asset('img/world/room-stage3.webp')} alt="" width={120} height={267} loading="lazy" />
+        <img src={asset('img/world/study-desk.webp')} alt="" width={120} height={231} loading="lazy" />
         <p>
-          <b>앱이었다면</b> — 담은 단어 {rec.collected.length}개가 단어장에 들어가 FSRS-6가 복습할 날을 잡고, 익힌
-          단어는 몰비의 방에 물건으로 와요. 너무 쉽게 넘어간 단어는 이 글의 문장으로 문맥 퀴즈를 내요.
+          <b>앱이었다면</b> — 담은 단어 {rec.collected.length}개가 단어장에 들어가 FSRS-6가 복습할 날을 잡아요. 너무 쉽게 넘어간 단어는 이 글의 문장으로 문맥 퀴즈를 내요.
         </p>
       </div>
 

@@ -98,24 +98,14 @@
   box-shadow: var(--shadow-lg), inset 0 0 0 1px rgb(255 255 255 / 0.08);
 }
 
-.phone > img,
-.phone .before-after__box {
+.phone > img {
   border-radius: 28px;
   overflow: hidden;
   width: 100%;
-  aspect-ratio: 9 / 20;
+  aspect-ratio: 540 / 1038;
   object-fit: cover;
   object-position: top;
   background: var(--surface-dim);
-}
-
-.phone--sm {
-  border-radius: 26px;
-  padding: 6px;
-}
-
-.phone--sm > img {
-  border-radius: 21px;
 }
 
 /* ── 히어로 ───────────────────────────────────────── */
@@ -1023,7 +1013,7 @@
 
 .world__intro {
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 5fr);
   gap: 56px;
   align-items: center;
 }
@@ -1069,11 +1059,13 @@
 
 .before-after {
   width: 100%;
-  max-width: 300px;
   margin-inline: auto;
 }
 
 .before-after__box {
+  aspect-ratio: 12 / 5;
+  border-radius: 16px;
+  overflow: hidden;
   position: relative;
   touch-action: pan-y;
   cursor: ew-resize;
@@ -1162,49 +1154,27 @@
   accent-color: var(--action);
 }
 
-.gallery__nav {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 56px;
-}
-
-.gallery__nav p {
-  margin-right: auto;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-3);
-}
-
-.gallery__arrow {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-}
-
 .gallery {
-  margin: 12px -16px 0;
-  padding: 8px 16px 24px;
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 210px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: thin;
+  margin-top: 40px;
 }
 
 .gallery__item {
   margin: 0;
-  scroll-snap-align: start;
 }
 
-.gallery__item .phone {
-  transition: transform 0.3s var(--ease);
+.gallery__item img {
+  width: 100%;
+  border-radius: 16px;
 }
 
-.gallery__item:hover .phone {
-  transform: translateY(-6px) rotate(-1deg);
+@media (max-width: 620px) {
+  .gallery {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
 }
 
 .gallery__item figcaption {

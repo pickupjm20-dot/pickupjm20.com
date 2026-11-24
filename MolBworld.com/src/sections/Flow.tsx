@@ -1,6 +1,5 @@
 import { asset } from '../data/site';
 
-/** MolB의 방향(앱 FOLLOW_UP 135): "복습해야 할 단어가 자연스레 나오는 세계" — 영어는 추가 기능, 단어장은 태그로 갈린다. */
 const STEPS = [
   {
     icon: 'book_open',
@@ -24,7 +23,7 @@ const STEPS = [
     icon: 'tree_medium',
     title: '세상에서 다시 만나기',
     tag: '월드',
-    body: '복습할 단어가 마을에 몽타주 · 신문 · 전단지 · 쪽지 시험으로 붙어요. 익힌 만큼 몰비의 방도 자라요.',
+    body: '섬에서 이웃을 만나고 가게에서 영어로 주문해요. 하루를 마치면 몰비의 일기에 익힌 말을 써 봐요.',
   },
 ];
 
